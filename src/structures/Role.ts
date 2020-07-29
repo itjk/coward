@@ -1,5 +1,6 @@
 import { Client, Options } from "../Client.ts"
 import { Guild } from "./Guild.ts"
+import { Permission } from "../util/Permission.ts";
 
 /** Class representing a Role */
 export class Role {
@@ -9,8 +10,10 @@ export class Role {
 	public hoist: boolean
 	public managed: boolean
 	public mentionable: boolean
+	public permissions: Permission
 
 	constructor(data: any, public guild: Guild, protected client: Client) {
+		this.permissions = new Permission(data.permissions)
 		this.id = data.id
 		this.name = data.name
 		this.color = data.color

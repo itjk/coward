@@ -1,125 +1,60 @@
-import { Client } from "../../Client.ts"
 import { Versions, Discord } from "../../util/Constants.ts";
 import { Bucket } from "./Bucket.ts";
 
 export class RequestHandler {
-	private userAgent: string = `DiscordBot (https://github.com/fox-cat/coward), ${Versions.THIS}`;
-	private rateLimitBuckets = new Map<string, Bucket>();
+	private static readonly userAgent =
+		`DiscordBot (https://github.com/fox-cat/coward), ${Versions.THIS}`;
+	private readonly rateLimitBuckets = new Map<string, Bucket>();
 	public global = false;
 	public globalReset = 0;
 
-	constructor(private client: Client) {};
+	constructor(private readonly botToken: string) {}
 
-	public routify(method: string, url: string): string {
-        let route = url
-            .replace(/\/([a-z-]+)\/(?:[0-9]{17,19})/g, (match, p) => {
-                return p === 'channels' || p === 'guilds' || p === 'webhooks' ? match : `/${p}/:id`;
-            })
-            .replace(/\/reactions\/[^/]+/g, '/reactions/:id')
-            .replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token')
-            .replace(/\?.*$/, '');
-        
-		if (method.toUpperCase() === 'DELETE' && route.endsWith('/messages/:id')) { // Delete Messsage endpoint has its own ratelimit
-			route = method + route;
-        }
-        
-		return route;
-	}
-	
-	public applyHeadersToBucket(bucket: Bucket, headers: Headers) {
-		if(headers.has("x-ratelimit-global")) {
-			bucket.ratelimiter.global = true;
-			let offset = Date.parse(headers.get("date")!) - Date.now();
-			bucket.ratelimiter.globalReset = (+headers.get("retry-after")! * 1000) - (Date.now() + offset);
-		}
-
-		if(headers.has("x-ratelimit-limit")) {
-			bucket.limit = +headers.get("x-ratelimit-limit")!;	
-		}
-
-		if(headers.has("x-ratelimit-remaining")) {
-			bucket.remaining = +headers.get("x-ratelimit-remaining")!;
-		} else {
-			bucket.remaining = 1;
-		}
-
-		if(headers.has("x-ratelimit-reset")) {
-			let offset = Date.parse(headers.get("date")!) - Date.now();
-			bucket.reset = (+headers.get("x-ratelimit-reset")! * 1000) - (Date.now() + offset);
-		}
-	}
-
-	public addQueue(func: Function, method: string, url: string) {
-		const route = this.routify(method, url);
+	private addQueue(
+		func: Function,
+		method: string,
+		url: string,
+	): Promise<unknown> {
+		const route = routify(method, url);
 		let bucket = this.rateLimitBuckets.get(route);
-		if(!bucket) {
-			bucket = new Bucket(this);
+		if (!bucket) {
+			bucket = new Bucket();
 			this.rateLimitBuckets.set(route, bucket);
 		}
-		bucket.addQueue(func);
+		return bucket.addQueue(func);
 	}
 
-	public async request(method: string, url: string, data?: any, attempts: number = 0): Promise<any> {
-		let headers: {[k: string]: any} = {
-			"User-Agent": this.userAgent,
-			"Authorization": "Bot " + this.client.token,
+	public request(
+		method: string,
+		url: string,
+		data?: string | {
+			file?: {
+				file: File | Blob;
+				name: string;
+			};
+			[key: string]: any;
+		},
+	): Promise<unknown> {
+		const headers: { [k: string]: string } = {
+			"User-Agent": RequestHandler.userAgent,
+			"Authorization": "Bot " + this.botToken,
 			"X-Ratelimit-Precision": "millisecond",
-		}
+		};
 
-		let body: any;
+		const body = typeof data === "string"
+			? JSON.stringify({ content: data })
+			: this.makeBody({ ...data }, headers) ?? undefined;
 
-		if(data !== undefined) {
-			if(data.file) {
-				let form = new FormData();
+		const task = async (bucket: Bucket) =>
+			this.requestWithAttempts(
+				{ url, init: { method, headers, body }, bucket },
+			);
+		return this.addQueue(
+			task,
+			method,
+			url,
+		);
 
-				form.append("file", data.file.file, data.file.name);
-				console.log(data.file.file["Symbol"]);
-				delete data.file;
-				if(data !== undefined) {
-					form.append("payload_json", data);
-				}
-				body = form;
-			} else {
-				body = JSON.stringify(data);
-				headers["Content-Type"] = "application/json";
-			}
-		}
-
-		return new Promise(async (resolve, reject) => {
-			const req = async (bucket: Bucket) => {
-				try {
-					const response = await fetch(Discord.API + url, {
-						method: method,
-						headers: headers,
-						body: body,
-					});
-	
-					if(response.status == 204) return resolve();
-					const data = await response.json();
-					
-					if(response.ok) {
-						this.applyHeadersToBucket(bucket, response.headers);
-						return resolve(data);				
-					} else {
-						if(attempts == 3) return reject("Failed after 3 attempts.")
-
-						if(response.status == 429) {
-							console.warn("Received a 429; :(");
-							this.applyHeadersToBucket(bucket, response.headers);	
-							return this.request(method, url, data, attempts++);
-						}
-						
-						if(response.status == 502) {
-							return this.request(method, url, data, attempts++);
-						}
-					}
-				} catch(error) {
-					reject(error);
-				}
-			}
-			this.addQueue(async(bucket: Bucket) => {req(bucket)}, method, url);
-		})
-		
 		/** switch(response.status) {
 			case 400: case 401: case 403: case 404: case 405: case 429:
 			case 502: case 500: case 503: case 504: case 507: case 508:
@@ -138,4 +73,71 @@ export class RequestHandler {
 		
 		}*/
 	}
+
+	private makeBody(
+		data: {
+			readonly [key: string]: unknown;
+			file?: { file: File | Blob; name: string } | undefined;
+		} | undefined,
+		headers: { [k: string]: string },
+	): FormData | string | null {
+		if (data == null) {
+			return null;
+		}
+		if (data.file) {
+			const form = new FormData();
+
+			form.append("file", data.file.file, data.file.name);
+			// console.log(data.file.file["Symbol"]);
+			delete data.file;
+			if (0 < Object.keys(data).length) {
+				form.append("payload_json", new Blob([JSON.stringify(data)]));
+			}
+			return form;
+		}
+		headers["Content-Type"] = "application/json";
+		return JSON.stringify(data);
+	}
+
+	private async requestWithAttempts(
+		{ url, init, bucket, attemptLimit = 3 }: {
+			readonly url: string;
+			readonly init?: RequestInit;
+			readonly bucket: Bucket;
+			readonly attemptLimit?: number;
+		},
+	): Promise<unknown> {
+		for (let attempts = 0; attempts < attemptLimit; ++attempts) {
+			const response = await fetch(Discord.API + url, init);
+			if (response.status == 204) return;
+
+			if (response.ok) {
+				bucket.applyHeadersToBucket(response.headers);
+				return await response.json();
+			}
+			if (response.status == 429) {
+				console.warn("Received a 429; :(");
+				bucket.applyHeadersToBucket(response.headers);
+			}
+		}
+		throw new Error(`Failed after ${attemptLimit} attempts.`);
+	}
+}
+
+const idReplacer = (substring: string, p: unknown): string =>
+	p === "channels" || p === "guilds" || p === "webhooks"
+		? substring
+		: `/${p}/:id`;
+
+function routify(method: string, url: string): string {
+	const route = url
+		.replace(/\/([a-z-]+)\/(?:[0-9]{17,19})/g, idReplacer)
+		.replace(/\/reactions\/[^/]+/g, "/reactions/:id")
+		.replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, "/webhooks/$1/:token")
+		.replace(/\?.*$/, "");
+
+	if (method.toUpperCase() === "DELETE" && route.endsWith("/messages/:id")) { // Delete Messsage endpoint has its own ratelimit
+		return method + route;
+	}
+	return route;
 }

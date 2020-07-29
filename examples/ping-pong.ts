@@ -2,11 +2,11 @@ import { Client } from "https://deno.land/x/coward@dev/mod.ts";
 
 const client = new Client("TOKEN");
 
-const evt = client.evt;
+const events = client.events;
 
-evt.ready.attach(() => console.log("READY!"))
+events.ready.on(() => console.log("READY!"))
 
-evt.messageCreate.attach(async ({ message }) => {
+events.messageCreate.on(async ({ message }) => {
 	if(message.content == "!ping") {
 		await client.createMessage(message.channel.id, "pong!");
 	}

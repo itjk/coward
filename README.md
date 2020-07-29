@@ -15,7 +15,6 @@ You must be using [Deno v1.0.2](https://github.com/denoland/deno/releases/tag/v1
 import { Client } from "https://deno.land/x/coward@v0.3.2/mod.ts";
 ```
 Please don't use this in anything important yet. It is barely functional, and as such is not production ready.
-Also note, coward uses [Evt](https://github.com/garronej/evt) for events. You can read the documentation for that [here](https://docs.evt.land).
 
 ## Ping-Pong Example
 
@@ -24,9 +23,9 @@ import { Client } from "https://deno.land/x/coward@v0.3.2/mod.ts";
 
 let client = new Client("TOKEN");
 
-client.evt.ready.attach(() => {console.log("READY!")});
+client.events.ready.on(() => {console.log("READY!")});
 
-client.evt.messageCreate.attach(async ({message}) => {
+client.events.messageCreate.on(async ({message}) => {
   if(message.content == "!ping") {
     await message.channel.createMessage("Pong!");
   }
@@ -57,6 +56,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/Joralmo"><img src="https://avatars0.githubusercontent.com/u/19753876?v=4" width="100px;" alt=""/><br /><sub><b>Joralmo</b></sub></a><br /><a href="https://github.com/fox-cat/coward/commits?author=Joralmo" title="Code">💻</a> <a href="https://github.com/fox-cat/coward/issues?q=author%3AJoralmo" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/userterminal"><img src="https://avatars3.githubusercontent.com/u/55012346?v=4" width="100px;" alt=""/><br /><sub><b>Exists</b></sub></a><br /><a href="https://github.com/fox-cat/coward/commits?author=userterminal" title="Code">💻</a></td>
     <td align="center"><a href="http://mikuroxina.github.io/portfolio"><img src="https://avatars2.githubusercontent.com/u/10331164?v=4" width="100px;" alt=""/><br /><sub><b>Mikuro Xina</b></sub></a><br /><a href="https://github.com/fox-cat/coward/commits?author=MikuroXina" title="Code">💻</a></td>
+    <td align="center"><a href="https://ahowe.dev/"><img src="https://avatars2.githubusercontent.com/u/16884313?v=4" width="100px;" alt=""/><br /><sub><b>unlimitedcoder2</b></sub></a><br /><a href="https://github.com/fox-cat/coward/commits?author=unlimitedcoder2" title="Code">💻</a></td>
   </tr>
 </table>
 

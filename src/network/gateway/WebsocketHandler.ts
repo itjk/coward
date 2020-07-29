@@ -140,7 +140,7 @@ export default class Gateway {
 		handleEvent(this.client, message)
 	}
 
-	private async close() {
+	public async close() {
 		this.receivedAck = true
 		if (this.heartbeat) clearInterval(this.heartbeat)
 		if (!this.sock.isClosed) this.sock.close(1000)

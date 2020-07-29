@@ -9,7 +9,7 @@ import { User } from "./structures/User.ts"
 import { Role } from "./structures/Role.ts"
 import { Invite } from "./structures/Invite.ts"
 
-import * as evt from "./Events.ts";
+import * as events from "./Events.ts";
 import { RequestHandler } from "./network/rest/RequestHandler.ts"
 import Gateway from "./network/gateway/WebsocketHandler.ts"
 
@@ -20,7 +20,7 @@ import Gateway from "./network/gateway/WebsocketHandler.ts"
  *            import { Coward } from "https://deno.land/x/coward@v0.2.1/mod.ts"
  *            const client = new Coward("TOKEN_GOES_HERE")
  *
- *            client.evt.ready.attach(() => {
+ *            client.events.ready.on(() => {
  *                console.log("READY")
  *            })
  *
@@ -51,14 +51,19 @@ export class Client {
 		}
 
 		this.gateway = new Gateway(token, this)
-		this.requestHandler = new RequestHandler(this)
+		this.requestHandler = new RequestHandler(token)
 	}
 
-	public evt = evt;
+	public events = events;
 
 	/** Connect to the Discord API */
 	connect() {
 		this.gateway.connect()
+	}
+
+	/** Disconnect to the Discord API */
+	disconnect() {
+		this.gateway.close();
 	}
 
 	modifyPresence(options: Options.modifyPresence = { status: "online" }): Promise<void> {
@@ -84,8 +89,8 @@ export class Client {
 	}
 
 	/** Delete a channel. Requires the `MANAGE_CHANNELS` permission in the guild. */
-	deleteChannel(channelID: string): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.CHANNEL(channelID) )
+	async deleteChannel(channelID: string): Promise<void> {
+		await this.requestHandler.request( "DELETE", Endpoints.CHANNEL(channelID) )
 	}
 
 	/** Get a DM channel of a user - if there is none, create one. */
@@ -129,19 +134,19 @@ export class Client {
 	}
 
 	/** Delete a message in a channel. Requires the `MANAGE_MESSAGES` permission. */
-	deleteMessage(
+	async deleteMessage(
 		/** Channel the message is in */
 		channelID: string,
 		/** The message to delete */
 		messageID: string
 	): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.CHANNEL_MESSAGE(channelID, messageID) )
+		await this.requestHandler.request( "DELETE", Endpoints.CHANNEL_MESSAGE(channelID, messageID) )
 	}
 
 	// TODO: bulkDeleteMessage(channelID: string, amount: number): void {}
 
 	/** Put a reaction on a message. Requires the `READ_MESSAGE_HISTORY` permission. Additionally, if nobody has reacted to the message with the emoji, requires the `ADD_REACTIONS` permission. */
-	putReaction(
+	async putReaction(
 		/** Channel the message is in */
 		channelID: string,
 		/** The message to put the reaction on */
@@ -149,11 +154,11 @@ export class Client {
 		/** Emoji to react with. */
 		emoji: string
 	): Promise<void> {
-		return this.requestHandler.request( "PUT", Endpoints.CHANNEL_MESSAGE_REACTION_USER(channelID, messageID, encodeURI(emoji), "@me"))
+		await this.requestHandler.request( "PUT", Endpoints.CHANNEL_MESSAGE_REACTION_USER(channelID, messageID, encodeURI(emoji), "@me"))
 	}
 
 	/** Delete a reaction on a message. If deleting a reaction from another user, requires the `MANAGE_MESSAGES` permission. */
-	deleteReaction(
+	async deleteReaction(
 		/** The channel the message is in */
 		channelID: string,
 		/** The message to delete the reaction from */
@@ -163,21 +168,21 @@ export class Client {
 		/** The user ID of the other user. Defaults to self. */
 		userID?: string
 	): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.CHANNEL_MESSAGE_REACTION_USER(channelID, messageID, encodeURI(emoji), userID || "@me"))
+		await this.requestHandler.request( "DELETE", Endpoints.CHANNEL_MESSAGE_REACTION_USER(channelID, messageID, encodeURI(emoji), userID || "@me"))
 	}
 
 	/** Delete all reactions from a message. Requires the `MANAGE_MESSAGES` permission. */
-	deleteAllReactions(
+	async deleteAllReactions(
 		/** The channel the message is in */
 		channelID: string,
 		/** The message to delete the reactions on */
 		messageID: string
 	): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.CHANNEL_MESSAGE_REACTIONS(channelID, messageID))
+		await this.requestHandler.request( "DELETE", Endpoints.CHANNEL_MESSAGE_REACTIONS(channelID, messageID))
 	}
 
 	/** Delete all reactions with a given emoji on a message. Requires `MANAGE_MESSAGES` permission. */
-	deleteAllEmojiReactions(
+	async deleteAllEmojiReactions(
 		/** The channel the message is in */
 		channelID: string,
 		/** The message to delete the reactions on */
@@ -185,12 +190,14 @@ export class Client {
 		/** The emoji to delete the reactions of */
 		emoji: string
 	): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.CHANNEL_MESSAGE_REACTION(channelID, messageID, encodeURI(emoji)))
+		await this.requestHandler.request( "DELETE", Endpoints.CHANNEL_MESSAGE_REACTION(channelID, messageID, encodeURI(emoji)))
 	}
 
 	// TODO: putChannelPermissions ?
 
-	// TODO: createChannelInvite ?
+	createChannelInvite(channelID: string, inviteOptions?: {max_age?: number, max_uses?: number}): Promise<Invite> {
+		return this.requestHandler.request("POST", Endpoints.CHANNEL_INVITES(channelID), inviteOptions) as Promise<Invite>
+	}
 
 	/** Get invites in a guild channel. Returns an array of Invite objects. Requires `MANAGE_CHANNELS` permission. */
 	getChannelInvites(channelID: string): Promise<Array<Invite>> {
@@ -211,28 +218,28 @@ export class Client {
 	 * Post a typing indicator for a specified channel.
 	 * Bots should usually not use this, however if a bot is responding to a command and expects the computation to take a few seconds, this may be used to let the user know that the bot is processing their message.
 	 */
-	postTypingIndicator(channelID: string): Promise<void> {
-		return this.requestHandler.request( "POST", Endpoints.CHANNEL_TYPING(channelID) )
+	async postTypingIndicator(channelID: string): Promise<void> {
+		await this.requestHandler.request( "POST", Endpoints.CHANNEL_TYPING(channelID) )
 	}
 
 	/** Pin a message in a channel. Requires the `MANAGE_MESSAGES` permission. */
-	putPin(
+	async putPin(
 		/** Channel to pin the message in */
 		channelID: string,
 		/** Message to pin */
 		messageID: string
 	): Promise<void> {
-		return this.requestHandler.request( "PUT", Endpoints.CHANNEL_PIN(channelID, messageID) )
+		await this.requestHandler.request( "PUT", Endpoints.CHANNEL_PIN(channelID, messageID) )
 	}
 
 	/** Delete a pinned channel message. Requires the `MANAGE_MESSAGES` permission. */
-	deletePin(
+	async deletePin(
 		/** Channel to delete the pin from */
 		channelID: string,
 		/** Message to delete the pin from */
 		messageID: string
 	): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.CHANNEL_PIN(channelID, messageID) )
+		await this.requestHandler.request( "DELETE", Endpoints.CHANNEL_PIN(channelID, messageID) )
 	}
 
 	// TODO: Emoji (https://discord.com/developers/docs/resources/emoji)
@@ -247,8 +254,8 @@ export class Client {
 	}
 
 	/** Delete a guild permanently. Must be the owner. */
-	deleteGuild(guildID: string): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.GUILD(guildID) )
+	async deleteGuild(guildID: string): Promise<void> {
+		await this.requestHandler.request( "DELETE", Endpoints.GUILD(guildID) )
 	}
 
 	/** Modify the attributes of a guild member. */
@@ -269,7 +276,7 @@ export class Client {
 	}
 
 	/** Put a role on a member in a guild. Requires `MANAGE_ROLES` permission. */
-	putRole(
+	async putRole(
 		/** Guild the member is in */
 		guildID: string,
 		/** Member to add the role to */
@@ -277,11 +284,11 @@ export class Client {
 		/** ID of the role */
 		roleID: string
 	): Promise<void> {
-		return this.requestHandler.request( "PUT", Endpoints.GUILD_MEMBER_ROLE(guildID, userID, roleID) )
+		await this.requestHandler.request( "PUT", Endpoints.GUILD_MEMBER_ROLE(guildID, userID, roleID) )
 	}
 
 	/** Remove a role from a member in a guild. Requires `MANAGE_ROLES` permission. */
-	removeRole(
+	async removeRole(
 		/** Guild the member is in */
 		guildID: string,
 		/** Member to remove the role from */
@@ -289,38 +296,38 @@ export class Client {
 		/** ID of the role */
 		roleID: string
 	): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.GUILD_MEMBER_ROLE(guildID, userID, roleID) )
+		await this.requestHandler.request( "DELETE", Endpoints.GUILD_MEMBER_ROLE(guildID, userID, roleID) )
 	}
 
 	/** Remove a member from a guild. Requires `KICK_MEMBERS` permission. */
-	removeMember(
+	async removeMember(
 		/** Guild the member is in */
 		guildID: string,
 		/** Member to remove from the guild */
 		userID: string
 	): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.GUILD_MEMBER(guildID, userID) )
+		await this.requestHandler.request( "DELETE", Endpoints.GUILD_MEMBER(guildID, userID) )
 	}
 
 	/** Put a ban in a guild. Requires `BAN_MEMBERS` permission. */
-	putBan(
+	async putBan(
 		/** Guild to put the ban in */
 		guildID: string,
 		/** User to ban */
 		userID: string,
 		options: Options.putBan
 	): Promise<void> {
-		return this.requestHandler.request( "PUT", Endpoints.GUILD_BAN(guildID, userID), options )
+		await this.requestHandler.request( "PUT", Endpoints.GUILD_BAN(guildID, userID), options )
 	}
 
 	/** Delete a ban from a guild. Requires `BAN_MEMBERS` permission. */
-	deleteBan(
+	async deleteBan(
 		/** Guild to ban the user from */
 		guildID: string,
 		/** User to ban */
 		userID: string
 	): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.GUILD_BAN(guildID, userID) )
+		await this.requestHandler.request( "DELETE", Endpoints.GUILD_BAN(guildID, userID) )
 	}
 
 	/** Create a role in a guild. Requires `MANAGE_ROLES` permission. */
@@ -360,8 +367,8 @@ export class Client {
 	}
 
 	/** Delete a role in a guild. Requires `MANAGE_ROLES` permission. */
-	deleteRole(guildID: string, roleID: string): Promise<void> {
-		return this.requestHandler.request( "DELETE", Endpoints.GUILD_ROLE(guildID, roleID) )
+	async deleteRole(guildID: string, roleID: string): Promise<void> {
+		await this.requestHandler.request( "DELETE", Endpoints.GUILD_ROLE(guildID, roleID) )
 	}
 
 	// TODO: prune https://discord.com/developers/docs/resources/guild#modify-guild-role-positions
