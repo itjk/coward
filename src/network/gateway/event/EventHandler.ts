@@ -20,7 +20,10 @@ export function handleEvent(
   subscriber: EventSubscriber,
   database: GuildDB & ChannelDB,
 ) {
-  if (message.t.startsWith("CHANNEL_")) {
+  const type = message.t;
+  if (!type) return;
+
+  if (type.startsWith("CHANNEL_")) {
     handleChannelEvent(
       message,
       subscriber,
@@ -29,7 +32,7 @@ export function handleEvent(
     );
     return;
   }
-  if (message.t.startsWith("GUILD_")) {
+  if (type.startsWith("GUILD_")) {
     handleGuildEvent(
       client,
       message,
@@ -38,11 +41,10 @@ export function handleEvent(
     );
     return;
   }
-  if (message.t.startsWith("MESSAGE_")) {
+  if (type.startsWith("MESSAGE_")) {
     handleMessageEvent(client, message, subscriber);
     return;
   }
-  const type = message.t;
   switch (type) {
     case "READY": {
       subscriber.ready.emit({ type });

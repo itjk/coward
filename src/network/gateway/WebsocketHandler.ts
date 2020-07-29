@@ -38,7 +38,7 @@ export default class Gateway {
   ) {
     this.heart = new Heart({
       send: (v: object) => this.sock.send(JSON.stringify(v)),
-      attemptReconnect: this.attemptReconnect,
+      attemptReconnect: () => this.attemptReconnect(),
     });
   }
 
@@ -60,7 +60,7 @@ export default class Gateway {
         }));
       } else {
         this.status = "handshaking";
-        this.heart.heartbeat();
+        await this.heart.heartbeat();
         await this.identify();
       }
       await this.mainCycle();
@@ -84,7 +84,7 @@ export default class Gateway {
 
   private async attemptReconnect() {
     this.status = "resuming";
-    this.close();
+    await this.close();
     await this.connect();
   }
 
@@ -121,19 +121,6 @@ export default class Gateway {
     if (message.s) {
       this.sequence = message.s;
     }
-
-    switch (message.op) {
-      /** case OpCode.HEARTBEAT:
-				this.sock.send(JSON.stringify({
-					op: OpCode.HEARTBEAT,
-					d: this.sequence,
-				}));
-				break; **/
-      case OpCode.RECONNECT:
-        this.attemptReconnect(); // Don't close the connection lol
-        break;
-    }
-
     await this.heart.handleWebSocketMessage(message);
 
     handleEvent(
@@ -144,8 +131,8 @@ export default class Gateway {
     );
   }
 
-  close() {
-    this.heart.close();
+  async close() {
+    await this.heart.close();
     if (!this.sock.isClosed) this.sock.close(1000);
   }
 

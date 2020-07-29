@@ -10,7 +10,7 @@ export interface HeartDelegate {
 export class Heart {
   private heartbeatInterval = 0;
   private heartbeatTimer: number | null = null;
-  private receivedAck = false;
+  private receivedAck = true;
   private _lastPingTimestamp = 0;
   private _ping = 0;
   private sequence: number | null = null;
@@ -29,7 +29,7 @@ export class Heart {
     try {
       if (this.receivedAck) {
         await this.delegate.send({
-          op: 1,
+          op: OpCode.HEARTBEAT,
           d: this.sequence,
         });
       } else {
@@ -51,22 +51,31 @@ export class Heart {
     if (message.s) {
       this.sequence = message.s;
     }
-    if (message.op == OpCode.HELLO) {
-      const data = message.d as { heartbeat_interval: number };
-      this.heartbeatInterval = data.heartbeat_interval;
-      this.heartbeatTimer = setInterval(
-        () => this.heartbeat(),
-        this.heartbeatInterval,
-      );
-    }
-    if (message.op == OpCode.HEARTBEAT_ACK) {
-      this.receivedAck = true;
-      this._ping = Date.now() - this.lastPingTimestamp;
+    switch (message.op) {
+      case OpCode.RECONNECT:
+        await this.delegate.attemptReconnect();
+        return;
+      case OpCode.HELLO: {
+        const data = message.d as { heartbeat_interval: number };
+        this.heartbeatInterval = data.heartbeat_interval;
+        this.heartbeatTimer = setInterval(
+          () => this.heartbeat(),
+          this.heartbeatInterval,
+        );
+        return;
+      }
+      case OpCode.HEARTBEAT_ACK:
+        this.receivedAck = true;
+        this._ping = Date.now() - this.lastPingTimestamp;
+        return;
     }
   }
 
-  close() {
+  async close() {
     this.receivedAck = true;
-    if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
   }
 }

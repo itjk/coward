@@ -19,5 +19,5 @@ export type Payload = {
   op: OpCode;
   d?: unknown;
   s?: number;
-  t: Event;
+  t?: Event;
 };
