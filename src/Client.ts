@@ -79,10 +79,22 @@ export class Client {
 	setGuild(guildID: string, guild: Guild) {
 		this.guilds.set(guildID, guild);
 	}
-	setDMChannel() {}
-	 setDMChannelUsersRelation() {}
-		deleteDMChannel() {}
-		 deleteDMChannelUsersRelations() {}
+	
+	setDMChannel(id: string, channel: DMChannel) {
+		this.dmChannels.set(id, channel);
+	}
+
+	deleteDMChannel(id: string) {
+		this.dmChannelUsers.delete(id);
+	}
+
+	setDMChannelUsersRelation(userId: string, channelId: string) {
+		this.dmChannelUsers.set(userId, channelId);
+	}
+
+	deleteDMChannelUsersRelations(userId: string) {
+		this.dmChannelUsers.delete(userId);
+	}
 	// database implementation ends
 
 	/** Post a channel in a guild. Requires the `MANAGE_CHANNELS` permission. */

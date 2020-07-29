@@ -1,5 +1,5 @@
 import { Guild } from "../../structures/Guild.ts";
-import { Channel } from "../../structures/Channel.ts";
+import { DMChannel } from "../../structures/DMChannel.ts";
 
 const eventNames = [
 	"HELLO",
@@ -63,7 +63,7 @@ export interface GuildDB {
 }
 
 export interface ChannelDB {
-	setDMChannel(id: string, channel: Channel): void;
+	setDMChannel(id: string, channel: DMChannel): void;
 	setDMChannelUsersRelation(userId: string, channelId: string): void;
 	deleteDMChannel(id: string): void;
 	deleteDMChannelUsersRelations(userId: string): void;
