@@ -23,7 +23,7 @@ export class Heart {
 		return this._ping;
 	}
 
-	constructor(private delegate: HeartDelegate) {}
+	constructor(private readonly delegate: HeartDelegate) {}
 
 	async heartbeat(): Promise<void> {
 		try {
