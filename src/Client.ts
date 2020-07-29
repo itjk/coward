@@ -50,7 +50,7 @@ export class Client {
 			this.options.intents = bitmask
 		}
 
-		this.gateway = new Gateway(token, this)
+		this.gateway = new Gateway({token, intents: this.options.intents, client: this, database: this, subscriber: this.events})
 		this.requestHandler = new RequestHandler(token)
 	}
 
@@ -69,6 +69,21 @@ export class Client {
 	modifyPresence(options: Options.modifyPresence = { status: "online" }): Promise<void> {
 		return this.gateway.modifyPresence(options)
 	}
+
+	// database implementation starts
+	// TODO: Split these implementation to another class
+	getGuild(guildID: string): Guild | undefined {
+		return this.guilds.get(guildID);
+	}
+
+	setGuild(guildID: string, guild: Guild) {
+		this.guilds.set(guildID, guild);
+	}
+	setDMChannel() {}
+	 setDMChannelUsersRelation() {}
+		deleteDMChannel() {}
+		 deleteDMChannelUsersRelations() {}
+	// database implementation ends
 
 	/** Post a channel in a guild. Requires the `MANAGE_CHANNELS` permission. */
 	createChannel(guildID: string, options: Options.createChannel): Promise<Channel> {
@@ -266,7 +281,7 @@ export class Client {
 					const guild = this.guilds.get(guildID)
 					if(!guild) { reject() }
 					else {
-						const member = new GuildMember(data, guild, this)
+						const member = new GuildMember(data, guild)
 						guild.members.set(member.user.id, member)
 						resolve(member)
 					}

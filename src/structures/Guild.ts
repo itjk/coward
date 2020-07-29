@@ -43,7 +43,7 @@ export class Guild {
 
 		if(data.members) {
 			for(const mem of data.members) {
-				this.members.set(mem.user.id, new GuildMember(mem, this, client))
+				this.members.set(mem.user.id, new GuildMember(mem, this))
 			}
 		}
 

@@ -10,17 +10,17 @@ import { GuildEmoji } from "../../../../structures/GuildEmoji.ts";
 
 export interface GuildEventSubscriber
   extends RoleEventSubscriber, MemberEventSubscriber {
-  guildCreate: Emitter<{ type: "GUILD_CREATE"; guild: Guild }>;
-  guildDelete: Emitter<{ type: "GUILD_DELETE"; guild: Guild }>;
-  guildBanAdd: Emitter<{ type: "GUILD_BAN_ADD"; guild: Guild; user: User }>;
+  guildCreate: Emitter<{ guild: Guild }>;
+  guildDelete: Emitter<{ guild: Guild }>;
+  guildBanAdd: Emitter<{ guild: Guild; user: User }>;
   guildBanRemove: Emitter<
-    { type: "GUILD_BAN_REMOVE"; guild: Guild; user: User }
+    { guild: Guild; user: User }
   >;
   guildEmojisUpdate: Emitter<
-    { type: "GUILD_EMOJIS_UPDATE"; guild: Guild; emojis: Array<GuildEmoji> }
+    { guild: Guild; emojis: Array<GuildEmoji> }
   >;
   guildIntegrationsUpdate: Emitter<
-    { type: "GUILD_INTEGRATIONS_UPDATE"; guild: Guild }
+    { guild: Guild }
   >;
 }
 
@@ -43,13 +43,13 @@ export function handleGuildEvent(
     case "GUILD_CREATE": {
       const guild = new Guild(message.d, client);
       database.setGuild(guild.id, guild);
-      subscriber.guildCreate.emit({ type, guild: guild });
+      subscriber.guildCreate.emit({ guild: guild });
       return;
     }
     case "GUILD_DELETE": {
       const guild = new Guild(message.d, client);
       database.deleteGuild(guild.id);
-      subscriber.guildDelete.emit({ type, guild: guild });
+      subscriber.guildDelete.emit({ guild: guild });
       return;
     }
     case "GUILD_BAN_ADD": {
@@ -57,7 +57,7 @@ export function handleGuildEvent(
       const guild = database.getGuild(data.guild_id);
       if (guild == null) return;
       subscriber.guildBanAdd.emit(
-        { type, guild: guild, user: data.user },
+        { guild: guild, user: data.user },
       );
       return;
     }
@@ -66,7 +66,7 @@ export function handleGuildEvent(
       const guild = database.getGuild(data.guild_id);
       if (guild == null) return;
       subscriber.guildBanRemove.emit(
-        { type, guild: guild, user: data.user },
+        { guild: guild, user: data.user },
       );
       return;
     }
@@ -78,14 +78,14 @@ export function handleGuildEvent(
       const emojis = new Array<GuildEmoji>(
         ...data.emojis.map((emoji) => new GuildEmoji(emoji, guild, client)),
       );
-      subscriber.guildEmojisUpdate.emit({ type, guild: guild, emojis: emojis });
+      subscriber.guildEmojisUpdate.emit({ guild: guild, emojis: emojis });
       return;
     }
     case "GUILD_INTEGRATIONS_UPDATE": {
       const data = message.d as { guild_id: string };
       const guild = database.getGuild(data.guild_id);
       if (guild == null) return;
-      subscriber.guildIntegrationsUpdate.emit({ type, guild: guild });
+      subscriber.guildIntegrationsUpdate.emit({ guild: guild });
       return;
     }
   }

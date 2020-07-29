@@ -1,6 +1,6 @@
 import { Payload } from "../../../Payload.ts";
 import { Guild } from "../../../../../structures/Guild.ts";
-import { User } from "../../../../../structures/user.ts";
+import { User } from "../../../../../structures/User.ts";
 import { GuildMember } from "../../../../../structures/GuildMember.ts";
 import { Emitter } from "../../../../../util/Emitter.ts";
 import { GuildDB } from "../../../Event.ts";

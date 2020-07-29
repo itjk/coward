@@ -24,7 +24,7 @@ export class Message {
 		if(guild != undefined) { channel = guild.channels.get(data.channel_id); }
 		else { channel = client.dmChannels.get(data.channel_id); }
 		this.channel = channel;
-		this.author = new User(data.author, client);
+		this.author = new User(data.author);
 		this.timestamp = data.timestamp;
 	}
 }

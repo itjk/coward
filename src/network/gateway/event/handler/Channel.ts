@@ -11,10 +11,10 @@ import { GuildNewsChannel } from "../../../../structures/GuildNewsChannel.ts";
 import { GuildStoreChannel } from "../../../../structures/GuildStoreChannel.ts";
 
 export interface RoleEventSubscriber {
-  channelCreate: Emitter<{ type: "CHANNEL_CREATE"; channel: Channel }>;
-  channelUpdate: Emitter<{ type: "CHANNEL_UPDATE"; channel: Channel }>;
-  channelDelete: Emitter<{ type: "CHANNEL_DELETE"; channel: Channel }>;
-  channelPinsUpdate: Emitter<{ type: "CHANNEL_PINS_UPDATE"; channel: Channel }>;
+  channelCreate: Emitter<{ channel: Channel }>;
+  channelUpdate: Emitter<{ channel: Channel }>;
+  channelDelete: Emitter<{ channel: Channel }>;
+  channelPinsUpdate: Emitter<{ channel: Channel }>;
 }
 
 export function handleChannelEvent(
@@ -34,7 +34,7 @@ export function handleChannelEvent(
           channel.id,
         );
       }
-      subsscriber.channelCreate.emit({ type, channel: channel });
+      subsscriber.channelCreate.emit({ channel: channel });
       return;
     }
     case "CHANNEL_UPDATE": {
@@ -42,7 +42,7 @@ export function handleChannelEvent(
       if (channel instanceof DMChannel) {
         database.setDMChannel(channel.id, channel);
       }
-      subsscriber.channelUpdate.emit({ type, channel: channel });
+      subsscriber.channelUpdate.emit({ channel: channel });
       return;
     }
     case "CHANNEL_DELETE": {
@@ -51,12 +51,12 @@ export function handleChannelEvent(
         database.deleteDMChannel(channel.id);
         database.deleteDMChannelUsersRelations(channel.recipients[0].id);
       }
-      subsscriber.channelDelete.emit({ type, channel: channel });
+      subsscriber.channelDelete.emit({ channel: channel });
       return;
     }
     case "CHANNEL_PINS_UPDATE": {
       subsscriber.channelPinsUpdate.emit(
-        { type, channel: channelFrom(message.d, client) },
+        { channel: channelFrom(message.d, client) },
       );
       return;
     }

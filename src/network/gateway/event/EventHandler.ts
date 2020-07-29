@@ -7,11 +7,11 @@ import {
   handleMessageEvent,
   MessageEventSubscriber,
 } from "./handler/Message.ts";
-import { GuildDB, ChannelDB } from "../event.ts";
+import { GuildDB, ChannelDB } from "../Event.ts";
 
 export interface EventSubscriber
   extends RoleEventSubscriber, GuildEventSubscriber, MessageEventSubscriber {
-  ready: Emitter<{ type: "READY" }>;
+  ready: Emitter<unknown>;
 }
 
 export function handleEvent(

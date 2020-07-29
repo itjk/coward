@@ -13,7 +13,7 @@ export class DMChannel extends TextChannel {
 
 		let arr: Array<any> = []
 		for (let i in data.recipients) {
-			arr[<any>i] = new User(data.recipients[i], client)
+			arr[<any>i] = new User(data.recipients[i])
 		}
 		this.recipients = arr
 	}

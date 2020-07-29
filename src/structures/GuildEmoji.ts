@@ -25,7 +25,7 @@ export class GuildEmoji {
 				this.roles.set(r.id, new Role(r, guild, client));
 			}
 		}
-		if(this.user) this.user = new User(data.user, client) || null;
+		if(this.user) this.user = new User(data.user) || null;
 		this.requireColons = data.require_colons;
 		this.managed = data.managed;
 		this.animated = data.animated || false;

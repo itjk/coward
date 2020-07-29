@@ -144,7 +144,7 @@ export default class Gateway {
     );
   }
 
-  private close() {
+  close() {
     this.heart.close();
     if (!this.sock.isClosed) this.sock.close(1000);
   }
