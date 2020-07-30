@@ -29,8 +29,6 @@ export class GuildMember {
 			this.roles.set(role.id, role);
 			this.permissions.add(role.permissions);
 		}
-		
-
 
 		this.joinedAt = data.joinedAt;
 		this.premiumSince = data.premiumSince || null;
