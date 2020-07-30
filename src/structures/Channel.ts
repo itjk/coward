@@ -15,18 +15,10 @@ import {
 export class Channel {
 	public id: string;
 	public type: number;
-	public permission_overwrites: Map<string, PermissionOverwrite>;
 
 	constructor(data: any, protected client: Client) {
 		this.id = data.id;
-		this.type = data.type;
-
-		this.permission_overwrites = new Map<string, PermissionOverwrite>();
-		for(let permission_overwrite of data.permission_overwrites) {
-			let perms = new PermissionOverwrite(permission_overwrite, client);
-			this.permission_overwrites.set(perms.id, perms);
-		}
-
+		this.type = data.type
 	}
 
 	static from(data: any, client: Client) {
