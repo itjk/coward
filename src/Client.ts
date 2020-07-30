@@ -447,13 +447,13 @@ export namespace Options {
 		content?: string,
 		tts?: boolean,
 		file?: {name: string, file: File | Blob},
-		embed?: EmbedMessage,
+		embed?: EmbedMessage
 	}
 
 	export interface modifyMessage {
 		content?: string,
 		// TODO: file
-		embed?: EmbedMessage,
+		embed?: EmbedMessage
 	}
 
 	export interface modifyGuild {
