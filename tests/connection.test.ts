@@ -10,5 +10,5 @@ Deno.test("Connects to discord and emits ready event", async () => {
 		bot.disconnect();
 	});
 	
-	await bot.gateway.connect();
+	bot.connect();
 });
