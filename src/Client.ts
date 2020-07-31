@@ -1,4 +1,4 @@
-import { Endpoints, Intents } from "./util/Constants.ts";
+import { Endpoints } from "./util/Constants.ts";
 
 import { Channel } from "./structures/Channel.ts";
 import { Guild } from "./structures/Guild.ts";

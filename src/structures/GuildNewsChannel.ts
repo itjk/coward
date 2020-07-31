@@ -2,7 +2,6 @@ import { Client } from "../Client.ts";
 import { GuildChannel } from "./GuildChannel.ts";
 import { TextChannel } from "./TextChannel.ts";
 import { applyMixins } from "../util/Mixins.ts";
-import { Channel } from "./Channel.ts";
 
 /**
  * Class representing a news channel in a guild

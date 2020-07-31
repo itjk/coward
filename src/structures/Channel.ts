@@ -7,7 +7,6 @@ import {
   GuildChannelCategory,
   GuildNewsChannel,
   GuildStoreChannel,
-  PermissionOverwrite,
 } from "../../mod.ts";
 // This doesn't work unless I import them all from here.
 

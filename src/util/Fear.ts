@@ -1,5 +1,4 @@
 import { green, red, blue, yellow, bold, reset } from "../../deps.ts";
-import { Client } from "../Client.ts";
 
 export type DebugTypes = "debug" | "info" | "warning" | "error" | "critical";
 
