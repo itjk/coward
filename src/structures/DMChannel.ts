@@ -13,7 +13,7 @@ export class DMChannel extends TextChannelMixIn(Channel) {
   constructor(data: any, client: Client) {
     super(data, client);
 
-    this.recipients = Object.values(data.recipients).map((recipient) =>
+    this.recipients = (data.recipients as any[]).map((recipient) =>
       new User(recipient)
     );
   }
