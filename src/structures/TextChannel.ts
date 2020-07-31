@@ -6,15 +6,15 @@ import { Options } from "../Client.ts";
  * @extends Channel
  */
 export class TextChannel extends Channel {
-    createMessage(content: string | Options.createMessage) {
-        return this.client.createMessage(this.id, content)
-    }
+  createMessage(content: string | Options.createMessage) {
+    return this.client.createMessage(this.id, content);
+  }
 
-    modifyMessage(messageID: string, content: string | Options.modifyMessage) {
-        return this.client.modifyMessage(this.id, messageID, content)
-    }
+  modifyMessage(messageID: string, content: string | Options.modifyMessage) {
+    return this.client.modifyMessage(this.id, messageID, content);
+  }
 
-    deleteMessage(messageID: string) {
-        return this.client.deleteMessage(this.id, messageID)
-    }
+  deleteMessage(messageID: string) {
+    return this.client.deleteMessage(this.id, messageID);
+  }
 }

@@ -6,13 +6,13 @@ import { GuildChannel } from "./GuildChannel.ts";
  * @extends GuildChannel
  */
 export class GuildVoiceChannel extends GuildChannel {
-	public bitrate: number;
-	public userLimit: number;
+  public bitrate: number;
+  public userLimit: number;
 
-	constructor(data: any, protected client: Client) {
-		super(data, client);
+  constructor(data: any, protected client: Client) {
+    super(data, client);
 
-		this.bitrate = data.bitrate;
-		this.userLimit = data.user_limit;
-	}
+    this.bitrate = data.bitrate;
+    this.userLimit = data.user_limit;
+  }
 }
