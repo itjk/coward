@@ -57,14 +57,17 @@ export class Client {
 
 	public events = events;
 
+	private connectionTask!: Promise<void>;
+
 	/** Connect to the Discord API */
 	connect() {
-		this.gateway.connect()
+		this.connectionTask = this.gateway.connect()
 	}
 
 	/** Disconnect to the Discord API */
-	disconnect() {
+	async disconnect() {
 		this.gateway.close();
+		await this.connectionTask;
 	}
 
 	modifyPresence(options: Options.modifyPresence = { status: "online" }): Promise<void> {
