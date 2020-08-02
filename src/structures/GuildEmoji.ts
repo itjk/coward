@@ -1,7 +1,7 @@
-import { Client } from "../Client.ts";
 import { Role } from "./Role.ts";
 import { User } from "./User.ts";
 import { Guild } from "./Guild.ts";
+import { Roles } from "./Delegates.ts";
 
 /** Class representing an emoji in a guild */
 export class GuildEmoji {
@@ -17,7 +17,7 @@ export class GuildEmoji {
   /** Whether the emoji is available - may be false due to loss of server boosts. */
   public available: boolean;
 
-  constructor(data: any, public guild: Guild, protected client: Client) {
+  constructor(data: any, public guild: Guild, client: Roles) {
     this.id = data.id;
     this.name = data.name;
     if (data.roles) {

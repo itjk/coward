@@ -9,15 +9,15 @@ export function TextChannelMixIn<T extends new (...args: any[]) => Channel>(
 ) {
   return class extends Base {
     createMessage(content: string | Options.createMessage) {
-      return this.client.createMessage(this.id, content);
+      return this.__messages.createMessage(this.id, content);
     }
 
     modifyMessage(messageID: string, content: string | Options.modifyMessage) {
-      return this.client.modifyMessage(this.id, messageID, content);
+      return this.__messages.modifyMessage(this.id, messageID, content);
     }
 
     deleteMessage(messageID: string) {
-      return this.client.deleteMessage(this.id, messageID);
+      return this.__messages.deleteMessage(this.id, messageID);
     }
   };
 }

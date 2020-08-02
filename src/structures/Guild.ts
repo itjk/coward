@@ -1,5 +1,3 @@
-import { Client } from "../Client.ts";
-
 import { GuildChannel } from "./GuildChannel.ts";
 import { GuildTextChannel } from "./GuildTextChannel.ts";
 import { GuildVoiceChannel } from "./GuildVoiceChannel.ts";
@@ -9,6 +7,13 @@ import { GuildStoreChannel } from "./GuildStoreChannel.ts";
 import { GuildMember } from "./GuildMember.ts";
 import { GuildEmoji } from "./GuildEmoji.ts";
 import { Role } from "./Role.ts";
+import {
+  GuildChannelAssociation,
+  Roles,
+  Messages,
+  Guilds,
+  Channels,
+} from "./Delegates.ts";
 
 type GuildChannelTypes =
   | GuildTextChannel
@@ -16,6 +21,13 @@ type GuildChannelTypes =
   | GuildChannelCategory
   | GuildNewsChannel
   | GuildStoreChannel;
+
+export type GuildClient =
+  & Guilds
+  & GuildChannelAssociation
+  & Roles
+  & Messages
+  & Channels;
 
 /** Class representing a guild */
 export class Guild {
@@ -36,7 +48,7 @@ export class Guild {
   /** A map of guild roles */
   public roles: Map<string, Role> = new Map<string, Role>();
 
-  constructor(data: any, protected client: Client) {
+  constructor(data: any, client: GuildClient) {
     this.id = data.id;
     this.name = data.name;
     this.ownerID = data.ownerID;
@@ -44,7 +56,7 @@ export class Guild {
 
     if (data.channels) {
       for (const chan of data.channels) {
-        client.channelGuildIDs.set(chan.id, this.id);
+        client.setGuildId(chan.id, this.id);
         this.channels.set(chan.id, GuildChannel.from(chan, client));
       }
     }

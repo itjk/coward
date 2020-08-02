@@ -1,5 +1,4 @@
-import { Client } from "../Client.ts";
-import { GuildChannel } from "./GuildChannel.ts";
+import { GuildChannel, GuildChannelClient } from "./GuildChannel.ts";
 import { TextChannelMixIn } from "./TextChannel.ts";
 
 /**
@@ -10,7 +9,7 @@ export class GuildNewsChannel extends TextChannelMixIn(GuildChannel) {
   public topic: string;
   public lastMessageID: string; // TODO(fox-cat): contemplate message object here?
 
-  constructor(data: any, protected client: Client) {
+  constructor(data: any, client: GuildChannelClient) {
     super(data, client);
 
     this.topic = data.topic || null;

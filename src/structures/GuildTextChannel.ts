@@ -1,6 +1,5 @@
-import { Client } from "../Client.ts";
 import { Message } from "./Message.ts";
-import { GuildChannel } from "./GuildChannel.ts";
+import { GuildChannel, GuildChannelClient } from "./GuildChannel.ts";
 import { TextChannelMixIn } from "./TextChannel.ts";
 
 /**
@@ -15,7 +14,7 @@ export class GuildTextChannel extends TextChannelMixIn(GuildChannel) {
   // TODO: deal with messages. possible message limit from client options?
   // contemplate. ^_^
 
-  constructor(data: any, protected client: Client) {
+  constructor(data: any, client: GuildChannelClient) {
     super(data, client);
 
     this.rateLimitPerUser = data.rate_limit_per_user;

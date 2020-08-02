@@ -2,13 +2,13 @@ import { Channel } from "../../../../structures/Channel.ts";
 import { Emitter } from "../../../../util/Emitter.ts";
 import { Payload } from "../../Payload.ts";
 import { ChannelDB } from "../../Event.ts";
-import { Client } from "../../../../Client.ts";
 import { GuildTextChannel } from "../../../../structures/GuildTextChannel.ts";
 import { DMChannel } from "../../../../structures/DMChannel.ts";
 import { GuildVoiceChannel } from "../../../../structures/GuildVoiceChannel.ts";
 import { GuildChannelCategory } from "../../../../structures/GuildChannelCategory.ts";
 import { GuildNewsChannel } from "../../../../structures/GuildNewsChannel.ts";
 import { GuildStoreChannel } from "../../../../structures/GuildStoreChannel.ts";
+import { GuildClient } from "../../../../structures/Guild.ts";
 
 export interface RoleEventSubscriber {
   channelCreate: Emitter<{ channel: Channel }>;
@@ -21,7 +21,7 @@ export function handleChannelEvent(
   message: Payload,
   subsscriber: RoleEventSubscriber,
   database: ChannelDB,
-  client: Client,
+  client: GuildClient,
 ) {
   const type = message.t;
   switch (type) {
@@ -63,7 +63,7 @@ export function handleChannelEvent(
   }
 }
 
-function channelFrom(data: any, client: Client): Channel {
+function channelFrom(data: any, client: GuildClient): Channel {
   switch (data.type) {
     case 0:
       return new GuildTextChannel(data, client);

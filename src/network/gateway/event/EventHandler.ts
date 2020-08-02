@@ -1,4 +1,3 @@
-import { Client } from "../../../Client.ts";
 import { Payload } from "../Payload.ts";
 import { Emitter } from "../../../util/Emitter.ts";
 import { handleChannelEvent, RoleEventSubscriber } from "./handler/Channel.ts";
@@ -8,6 +7,8 @@ import {
   MessageEventSubscriber,
 } from "./handler/Message.ts";
 import { GuildDB, ChannelDB } from "../Event.ts";
+import { GuildClient } from "../../../structures/Guild.ts";
+import { MessageClient } from "../../../structures/Message.ts";
 
 export interface EventSubscriber
   extends RoleEventSubscriber, GuildEventSubscriber, MessageEventSubscriber {
@@ -15,7 +16,7 @@ export interface EventSubscriber
 }
 
 export function handleEvent(
-  client: Client,
+  client: GuildClient & MessageClient,
   message: Payload,
   subscriber: EventSubscriber,
   database: GuildDB & ChannelDB,

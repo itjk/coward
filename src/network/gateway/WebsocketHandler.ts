@@ -6,12 +6,14 @@ import {
 } from "../../../deps.ts";
 import { fear } from "../../util/Fear.ts";
 import { Heart } from "./Heart.ts";
-import { Client, Options } from "../../Client.ts";
+import { Options } from "../../Client.ts";
 import { handleEvent, EventSubscriber } from "./event/EventHandler.ts";
 import { GuildDB, ChannelDB } from "./Event.ts";
 import { Discord, Versions } from "../../util/Constants.ts";
 import { OpCode, Payload } from "./Payload.ts";
 import { newCloseEvent, CloseEventCode } from "./event/Close.ts";
+import { GuildClient } from "../../structures/Guild.ts";
+import { MessageClient } from "../../structures/Message.ts";
 
 export default class Gateway {
   private sock!: WebSocket;
@@ -31,7 +33,7 @@ export default class Gateway {
     private readonly options: {
       readonly token: string;
       readonly intents: Options.clientConstructor["intents"];
-      readonly client: Client;
+      readonly client: GuildClient & MessageClient;
       readonly database: GuildDB & ChannelDB;
       readonly subscriber: EventSubscriber;
     },

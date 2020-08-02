@@ -1,5 +1,3 @@
-import { Client } from "../Client.ts";
-
 export class PermissionOverwrite {
   public type: string;
   public id: string;
@@ -8,7 +6,7 @@ export class PermissionOverwrite {
   public allow_new: string;
   public allow: number;
 
-  constructor(data: any, protected client: Client) {
+  constructor(data: any) {
     //this = {this, ...data};
     this.type = data.type;
     this.id = data.id;

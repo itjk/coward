@@ -91,6 +91,14 @@ export class Client {
     this.guilds.set(guildID, guild);
   }
 
+  getGuildId(channelID: string): string | undefined {
+    return this.channelGuildIDs.get(channelID);
+  }
+
+  setGuildId(channelID: string, guildID: string) {
+    this.channelGuildIDs.set(channelID, guildID);
+  }
+
   setDMChannel(id: string, channel: DMChannel) {
     this.dmChannels.set(id, channel);
   }

@@ -1,7 +1,19 @@
-import { Client, Options } from "../Client.ts";
+import { Options } from "../Client.ts";
 import { Channel } from "./Channel.ts";
 import { Guild } from "./Guild.ts";
 import { PermissionOverwrite } from "./PermissionOverwrite.ts";
+import {
+  Channels,
+  GuildChannelAssociation,
+  Guilds,
+  Messages,
+} from "./Delegates.ts";
+
+export type GuildChannelClient =
+  & Guilds
+  & GuildChannelAssociation
+  & Channels
+  & Messages;
 
 /**
  * Class representing a channel in a guild
@@ -13,26 +25,29 @@ export class GuildChannel extends Channel {
   public nsfw: boolean;
   public parentID: string; // TODO(fox-cat): channel category object ????
   public permission_overwrites: Map<string, PermissionOverwrite>;
-  protected _guildID: any;
+  protected _guildID: string | undefined;
 
-  constructor(data: any, client: Client) {
+  constructor(
+    data: any,
+    private readonly client: GuildChannelClient,
+  ) {
     super(data, client);
 
     this.name = data.name;
     this.position = data.position;
     this.nsfw = data.nsfw;
     this.parentID = data.parent_id || null;
-    this._guildID = client.channelGuildIDs.get(this.id);
+    this._guildID = client.getGuildId(this.id);
 
     this.permission_overwrites = new Map<string, PermissionOverwrite>();
     for (const permission_overwrite of data.permission_overwrites) {
-      const perms = new PermissionOverwrite(permission_overwrite, client);
+      const perms = new PermissionOverwrite(permission_overwrite);
       this.permission_overwrites.set(perms.id, perms);
     }
   }
 
   get guild(): Guild | undefined {
-    return this.client.guilds.get(this._guildID);
+    return this.client.getGuild(this._guildID ?? "");
   }
 
   delete() {

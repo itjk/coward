@@ -1,9 +1,8 @@
 import { RoleEventSubscriber, handleRoleEvent } from "./guild/Role.ts";
 import { MemberEventSubscriber, handleMemberEvent } from "./guild/Member.ts";
-import { Client } from "../../../../Client.ts";
 import { GuildDB } from "../../Event.ts";
 import { Payload } from "../../Payload.ts";
-import { Guild } from "../../../../structures/Guild.ts";
+import { Guild, GuildClient } from "../../../../structures/Guild.ts";
 import { User } from "../../../../structures/User.ts";
 import { Emitter } from "../../../../util/Emitter.ts";
 import { GuildEmoji } from "../../../../structures/GuildEmoji.ts";
@@ -25,7 +24,7 @@ export interface GuildEventSubscriber
 }
 
 export function handleGuildEvent(
-  client: Client,
+  client: GuildClient,
   message: Payload,
   subscriber: GuildEventSubscriber,
   database: GuildDB,

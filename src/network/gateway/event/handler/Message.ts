@@ -1,7 +1,6 @@
 import { Payload } from "../../Payload.ts";
-import { Message } from "../../../../structures/Message.ts";
+import { Message, MessageClient } from "../../../../structures/Message.ts";
 import { Emitter } from "../../../../util/Emitter.ts";
-import { Client } from "../../../../Client.ts";
 
 export interface MessageEventSubscriber {
   messageCreate: Emitter<{ message: Message }>;
@@ -15,7 +14,7 @@ export interface MessageEventSubscriber {
 }
 
 export function handleMessageEvent(
-  client: Client,
+  client: MessageClient,
   message: Payload,
   subscriber: MessageEventSubscriber,
 ) {

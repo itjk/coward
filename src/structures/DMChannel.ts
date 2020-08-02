@@ -1,7 +1,7 @@
-import { Client } from "../Client.ts";
 import { User } from "./User.ts";
 import { TextChannelMixIn } from "./TextChannel.ts";
 import { Channel } from "./Channel.ts";
+import { Messages } from "./Delegates.ts";
 
 /**
  * Class representing a DM channel
@@ -10,7 +10,7 @@ import { Channel } from "./Channel.ts";
 export class DMChannel extends TextChannelMixIn(Channel) {
   public recipients: Array<User>;
 
-  constructor(data: any, client: Client) {
+  constructor(data: any, client: Messages) {
     super(data, client);
 
     this.recipients = (data.recipients as any[]).map((recipient) =>

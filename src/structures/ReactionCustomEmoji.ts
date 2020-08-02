@@ -1,4 +1,3 @@
-import { Client } from "../Client.ts";
 import { ReactionStandardEmoji } from "./ReactionStandardEmoji.ts";
 
 /**
@@ -8,8 +7,8 @@ import { ReactionStandardEmoji } from "./ReactionStandardEmoji.ts";
 export class ReactionCustomEmoji extends ReactionStandardEmoji {
   public animateable: boolean;
 
-  constructor(data: any, protected client: Client) {
-    super(data, client);
+  constructor(data: any) {
+    super(data);
     this.animateable = data.animateable || false;
   }
 }
