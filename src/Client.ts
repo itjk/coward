@@ -1,10 +1,10 @@
 import { Endpoints } from "./util/Constants.ts";
 
 import { Channel } from "./structures/Channel.ts";
-import { Guild } from "./structures/Guild.ts";
+import { Guild, GuildClient } from "./structures/Guild.ts";
 import { GuildMember } from "./structures/GuildMember.ts";
 import { DMChannel } from "./structures/DMChannel.ts";
-import { Message } from "./structures/Message.ts";
+import { Message, MessageClient } from "./structures/Message.ts";
 import { User } from "./structures/User.ts";
 import { Role } from "./structures/Role.ts";
 import { Invite } from "./structures/Invite.ts";
@@ -27,7 +27,7 @@ import Gateway from "./network/gateway/WebsocketHandler.ts";
  *
  *            client.connect()
  */
-export class Client {
+export class Client implements GuildClient, MessageClient {
   private requestHandler: RequestHandler;
 
   public gateway: Gateway;
@@ -99,6 +99,10 @@ export class Client {
     this.channelGuildIDs.set(channelID, guildID);
   }
 
+  getDMChannel(id: string): DMChannel | undefined {
+    return this.dmChannels.get(id);
+  }
+
   setDMChannel(id: string, channel: DMChannel) {
     this.dmChannels.set(id, channel);
   }
@@ -148,10 +152,10 @@ export class Client {
   }
 
   /** Get a DM channel of a user - if there is none, create one. */
-  async getDMChannel(userID: string): Promise<DMChannel> {
+  async fetchDMChannel(userID: string): Promise<DMChannel> {
     const dmChannelID = this.dmChannelUsers.get(userID);
     if (dmChannelID != null) {
-      const dmChannel = this.dmChannels.get(dmChannelID);
+      const dmChannel = this.getDMChannel(dmChannelID);
       if (dmChannel != null) return dmChannel;
     }
     const data = await this.requestHandler.request(
@@ -376,7 +380,7 @@ export class Client {
       Endpoints.GUILD_MEMBER(guildID, userID),
       options,
     );
-    const guild = this.guilds.get(guildID);
+    const guild = this.getGuild(guildID);
     if (!guild) throw new Error("unknown guild");
 
     const member = new GuildMember(data, guild);
@@ -465,7 +469,7 @@ export class Client {
       Endpoints.GUILD_ROLES(guildID),
       options,
     );
-    const guild = this.guilds.get(guildID);
+    const guild = this.getGuild(guildID);
     if (!guild) throw new Error("unknown guild");
 
     const role = new Role(data, guild, this);
@@ -486,7 +490,7 @@ export class Client {
       Endpoints.GUILD_ROLE(guildID, roleID),
       options,
     );
-    const guild = this.guilds.get(guildID);
+    const guild = this.getGuild(guildID);
     if (!guild) throw new Error("unknown guild");
 
     const role = new Role(data, guild, this);

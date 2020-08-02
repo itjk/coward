@@ -20,7 +20,7 @@ export interface Channels {
 }
 
 export interface DMChannels {
-  getDMChannel(id: string): Promise<DMChannel>;
+  getDMChannel(id: string): DMChannel | undefined;
 }
 
 export interface Messages {
