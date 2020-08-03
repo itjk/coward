@@ -1,4 +1,4 @@
-import { Options } from "../Client.ts";
+import { ModifyRole } from "./Options.ts";
 import { Guild } from "./Guild.ts";
 import { Permission } from "../util/Permission.ts";
 import { Roles } from "./Handlers.ts";
@@ -29,7 +29,7 @@ export class Role {
     return this.handler.deleteRole(this.guild.id, this.id);
   }
 
-  modify(options: Options.modifyRole) {
+  modify(options: ModifyRole) {
     return this.handler.modifyRole(this.guild.id, this.id, options);
   }
 }

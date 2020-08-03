@@ -6,7 +6,7 @@ import {
 } from "../../../deps.ts";
 import { fear } from "../../util/Fear.ts";
 import { Heart } from "./Heart.ts";
-import { Options } from "../../Client.ts";
+import { ModifyPresence } from "../../structures/Options.ts";
 import { handleEvent, EventSubscriber } from "./event/EventHandler.ts";
 import { Discord, Versions } from "../../util/Constants.ts";
 import { OpCode, Payload } from "./Payload.ts";
@@ -31,7 +31,7 @@ export default class Gateway {
   constructor(
     private readonly options: {
       readonly token: string;
-      readonly intents: Options.clientConstructor["intents"];
+      readonly intents?: number;
       readonly client: GuildClient & MessageClient;
       readonly handler: GuildHandler;
       readonly subscriber: EventSubscriber;
@@ -105,7 +105,7 @@ export default class Gateway {
   }
 
   public async modifyPresence(
-    settings: Options.modifyPresence,
+    settings: ModifyPresence,
   ) {
     await this.sock.send(JSON.stringify({
       op: OpCode.PRESENCE_UPDATE,

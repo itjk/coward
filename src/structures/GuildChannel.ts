@@ -1,4 +1,4 @@
-import { Options } from "../Client.ts";
+import { ModifyChannel } from "./Options.ts";
 import { Channel } from "./Channel.ts";
 import { Guild } from "./Guild.ts";
 import { PermissionOverwrite } from "./PermissionOverwrite.ts";
@@ -54,7 +54,7 @@ export class GuildChannel extends Channel {
     return this.handler.deleteChannel(this.id);
   }
 
-  modify(options: Options.modifyChannel) {
+  modify(options: ModifyChannel) {
     return this.handler.modifyChannel(this.id, options);
   }
 }

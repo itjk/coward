@@ -7,10 +7,21 @@ import { DMChannel } from "../structures/DMChannel.ts";
 import { Message } from "../structures/Message.ts";
 import { Role } from "../structures/Role.ts";
 import { Invite } from "../structures/Invite.ts";
-import { EmbedMessage } from "../structures/EmbedMessage.ts";
 import { Database } from "../util/Database.ts";
 import { Requester } from "./Requester.ts";
 import { Messages, Roles, Channels } from "../structures/Handlers.ts";
+import {
+  ModifyRole,
+  CreateChannel,
+  ModifyChannel,
+  ModifyPresence,
+  CreateMessage,
+  ModifyMessage,
+  ModifyGuild,
+  ModifyMember,
+  PutBan,
+  CreateRole,
+} from "../structures/Options.ts";
 
 import * as events from "../Events.ts";
 import { RequestHandler } from "../network/rest/RequestHandler.ts";
@@ -53,7 +64,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   }
 
   modifyPresence(
-    options: Options.modifyPresence = { status: "online" },
+    options: ModifyPresence = { status: "online" },
   ): Promise<void> {
     return this.gateway.modifyPresence(options);
   }
@@ -61,7 +72,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   /** Post a channel in a guild. Requires the `MANAGE_CHANNELS` permission. */
   async createChannel(
     guildID: string,
-    options: Options.createChannel,
+    options: CreateChannel,
   ): Promise<Channel> {
     const data = await this.requestHandler.request(
       "POST",
@@ -74,7 +85,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   /** Modify a channel. Requires the `MANAGE_CHANNELS` permission in the guild. */
   async modifyChannel(
     channelID: string,
-    options: Options.modifyChannel,
+    options: ModifyChannel,
   ): Promise<Channel> {
     const data = await this.requestHandler.request(
       "PATCH",
@@ -107,7 +118,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   /** Post a message in a channel. Requires the `SEND_MESSAGES` permission.*/
   async createMessage(
     channelID: string,
-    content: string | Options.createMessage,
+    content: string | CreateMessage,
   ): Promise<Message> {
     if (typeof content === "string") content = { content: content };
     const data = await this.requestHandler.request(
@@ -124,7 +135,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
     channelID: string,
     /** Message to modify */
     messageID: string,
-    content: string | Options.modifyMessage,
+    content: string | ModifyMessage,
   ): Promise<Message> {
     if (typeof content === "string") content = { content: content };
     const data = await this.requestHandler.request(
@@ -292,7 +303,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   /** Modify a guild. Requires the `MANAGE_GUILD` permission. */
   async modifyGuild(
     guildID: string,
-    options: Options.modifyGuild,
+    options: ModifyGuild,
   ): Promise<Guild> {
     const data = await this.requestHandler.request(
       "PATCH",
@@ -311,7 +322,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   async modifyMember(
     guildID: string,
     userID: string,
-    options: Options.modifyMember,
+    options: ModifyMember,
   ): Promise<GuildMember> {
     const data = await this.requestHandler.request(
       "PATCH",
@@ -375,7 +386,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
     guildID: string,
     /** User to ban */
     userID: string,
-    options: Options.putBan,
+    options: PutBan,
   ): Promise<void> {
     await this.requestHandler.request(
       "PUT",
@@ -400,7 +411,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   /** Create a role in a guild. Requires `MANAGE_ROLES` permission. */
   async createRole(
     guildID: string,
-    options: Options.createRole,
+    options: CreateRole,
   ): Promise<Role> {
     const data = await this.requestHandler.request(
       "POST",
@@ -421,7 +432,7 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   async modifyRole(
     guildID: string,
     roleID: string,
-    options: Options.modifyRole,
+    options: ModifyRole,
   ): Promise<Role> {
     const data = await this.requestHandler.request(
       "PATCH",
@@ -445,106 +456,4 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
   }
 
   // TODO: prune https://discord.com/developers/docs/resources/guild#modify-guild-role-positions
-}
-
-/** Namespace for functions */
-export namespace Options {
-  export interface modifyPresence {
-    status?: "online" | "dnd" | "idle" | "invisible" | "offline";
-    game?: {
-      name: string;
-      type: number;
-    };
-  }
-
-  export interface createChannel {
-    name: string;
-    type: number;
-    position?: number;
-    //permission_overwrites?:
-    topic?: string;
-    nsfw?: boolean;
-    bitrate?: number;
-    user_limit?: number;
-    rate_limit_per_user?: number;
-    parent_id?: string;
-  }
-
-  export interface modifyChannel {
-    name?: string;
-    type?: number;
-    position?: number;
-    topic?: string;
-    nsfw?: boolean;
-    rate_limit_per_user?: number;
-    bitrate?: number;
-    user_limit?: number;
-    //permission_overwrites?: Array<>,
-    parent_id?: string;
-  }
-
-  export interface createMessage {
-    content?: string;
-    tts?: boolean;
-    file?: { name: string; file: File | Blob };
-    embed?: EmbedMessage;
-  }
-
-  export interface modifyMessage {
-    content?: string;
-    // TODO: file
-    embed?: EmbedMessage;
-  }
-
-  export interface modifyGuild {
-    name?: string;
-    region?: string;
-    verification_level?: number;
-    default_message_notifcations?: number;
-    explicit_content_filter?: number;
-    afk_channel_id?: string;
-    afk_timeout?: number;
-    // TODO: icon
-    owner_id?: string;
-    // TODO: splash
-    // TODO: banner
-    system_channel_id?: string;
-    rules_channel_id?: string;
-    public_updates_channel_id?: string;
-    preferred_locale?: string;
-  }
-
-  export interface modifyMember {
-    /** Value to set the user's nickname to. Requires `MANAGE_NICKNAMES` permission */
-    nick?: string;
-    //roles?: Array<string>
-    /** Whether the user is muted in voice channels. Requires `MUTE_MEMBERS` permission */
-    mute?: boolean;
-    /** Whether the user is deafened in voice channels. Requires `DEAFEN_MEMBERS` permission */
-    deaf?: boolean;
-    /** The channel to move the member to (if they are in a voice channel). Requires `MOVE_MEMBERS` permission */
-    channel_id?: string;
-  }
-
-  export interface putBan {
-    /** Amount of days to delete messages for (between 1-7) */
-    "delete-message-days"?: number;
-    reason?: string;
-  }
-
-  export interface createRole {
-    name?: string;
-    //permissions?: number,
-    color?: number;
-    hoist?: boolean;
-    mentionable?: boolean;
-  }
-
-  export interface modifyRole {
-    name?: string;
-    //permissions?: number,
-    color?: number;
-    hoist?: boolean;
-    mentionable?: boolean;
-  }
 }
