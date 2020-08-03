@@ -3,6 +3,8 @@ import { DMChannel } from "./DMChannel.ts";
 
 export interface Guilds {
   getGuild(id: string): Guild | undefined;
+  setGuild(guildID: string, guild: Guild): void;
+  deleteGuild(guildID: string): void;
 }
 
 export interface GuildChannelAssociation {
@@ -12,4 +14,8 @@ export interface GuildChannelAssociation {
 
 export interface DMChannels {
   getDMChannel(id: string): DMChannel | undefined;
+  setDMChannel(id: string, channel: DMChannel): void;
+  setDMChannelUsersRelation(userId: string, channelId: string): void;
+  deleteDMChannel(id: string): void;
+  deleteDMChannelUsersRelations(userId: string): void;
 }

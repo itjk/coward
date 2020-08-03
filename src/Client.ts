@@ -52,7 +52,6 @@ export class Client implements Messages, Roles, Channels {
         token,
         intents: this.options.intents,
         client: this.database,
-        database: this.database,
         handler: this,
         subscriber: this.events,
       },

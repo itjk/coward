@@ -1,10 +1,8 @@
 import { GuildClient, Guild } from "../structures/Guild.ts";
 import { DMChannel } from "../structures/DMChannel.ts";
 import { MessageClient } from "../structures/Message.ts";
-import { GuildDB, ChannelDB } from "../network/gateway/Event.ts";
 
-export class Database
-  implements GuildClient, MessageClient, GuildDB, ChannelDB {
+export class Database implements GuildClient, MessageClient {
   private readonly guilds: Map<string, Guild> = new Map<string, Guild>();
   private readonly channelGuildIDs: Map<string, string> = new Map<
     string,

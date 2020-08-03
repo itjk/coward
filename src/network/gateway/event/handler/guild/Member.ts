@@ -3,7 +3,7 @@ import { Guild } from "../../../../../structures/Guild.ts";
 import { User } from "../../../../../structures/User.ts";
 import { GuildMember } from "../../../../../structures/GuildMember.ts";
 import { Emitter } from "../../../../../util/Emitter.ts";
-import { GuildDB } from "../../../Event.ts";
+import { Guilds } from "../../../../../structures/Delegates.ts";
 
 export interface MemberEventSubscriber {
   guildMemberAdd: Emitter<{ guild: Guild; member: GuildMember }>;
@@ -15,28 +15,28 @@ export interface MemberEventSubscriber {
 
 export function handleMemberEvent(
   message: Payload,
-  { subscriber, database }: {
+  { subscriber, client }: {
     subscriber: MemberEventSubscriber;
-    database: GuildDB;
+    client: Guilds;
   },
 ) {
   switch (message.t) {
     case "GUILD_MEMBER_ADD": {
       const data = message.d as { guild_id: string };
-      const guild = database.getGuild(data.guild_id);
+      const guild = client.getGuild(data.guild_id);
       if (guild == null) return;
 
       const member = new GuildMember(message.d, guild);
       if (!member.user) return;
       guild.members.set(member.user.id, member);
-      database.setGuild(guild.id, guild);
+      client.setGuild(guild.id, guild);
 
       subscriber.guildMemberAdd.emit({ guild: guild, member: member });
       return;
     }
     case "GUILD_MEMBER_REMOVE": {
       const data = message.d as { guild_id: string; user: User };
-      const guild = database.getGuild(data.guild_id);
+      const guild = client.getGuild(data.guild_id);
 
       if (guild == null) return;
 
@@ -44,14 +44,14 @@ export function handleMemberEvent(
       if (!member || !member.user) return;
 
       guild.members.delete(member.user.id);
-      database.setGuild(guild.id, guild);
+      client.setGuild(guild.id, guild);
 
       subscriber.guildMemberRemove.emit({ guild: guild, member: member });
       return;
     }
     case "GUILD_MEMBER_UPDATE": {
       const data = message.d as { guild_id: string; user: User };
-      const guild = database.getGuild(data.guild_id);
+      const guild = client.getGuild(data.guild_id);
 
       if (guild == null) return;
       const oldMember = guild.members.get(data.user.id);

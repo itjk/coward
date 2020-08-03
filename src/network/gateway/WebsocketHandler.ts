@@ -8,7 +8,6 @@ import { fear } from "../../util/Fear.ts";
 import { Heart } from "./Heart.ts";
 import { Options } from "../../Client.ts";
 import { handleEvent, EventSubscriber } from "./event/EventHandler.ts";
-import { GuildDB, ChannelDB } from "./Event.ts";
 import { Discord, Versions } from "../../util/Constants.ts";
 import { OpCode, Payload } from "./Payload.ts";
 import { newCloseEvent, CloseEventCode } from "./event/Close.ts";
@@ -34,7 +33,6 @@ export default class Gateway {
       readonly token: string;
       readonly intents: Options.clientConstructor["intents"];
       readonly client: GuildClient & MessageClient;
-      readonly database: GuildDB & ChannelDB;
       readonly handler: GuildHandler;
       readonly subscriber: EventSubscriber;
     },

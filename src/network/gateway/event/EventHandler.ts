@@ -6,7 +6,6 @@ import {
   handleMessageEvent,
   MessageEventSubscriber,
 } from "./handler/Message.ts";
-import { GuildDB, ChannelDB } from "../Event.ts";
 import { GuildClient, GuildHandler } from "../../../structures/Guild.ts";
 import { MessageClient } from "../../../structures/Message.ts";
 
@@ -21,7 +20,6 @@ export function handleEvent(
     client: GuildClient & MessageClient;
     handler: GuildHandler;
     subscriber: EventSubscriber;
-    database: GuildDB & ChannelDB;
   },
 ) {
   const type = message.t;

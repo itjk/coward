@@ -1,7 +1,6 @@
 import { Channel } from "../../../../structures/Channel.ts";
 import { Emitter } from "../../../../util/Emitter.ts";
 import { Payload } from "../../Payload.ts";
-import { ChannelDB } from "../../Event.ts";
 import { GuildTextChannel } from "../../../../structures/GuildTextChannel.ts";
 import { DMChannel } from "../../../../structures/DMChannel.ts";
 import { GuildVoiceChannel } from "../../../../structures/GuildVoiceChannel.ts";
@@ -9,6 +8,7 @@ import { GuildChannelCategory } from "../../../../structures/GuildChannelCategor
 import { GuildNewsChannel } from "../../../../structures/GuildNewsChannel.ts";
 import { GuildStoreChannel } from "../../../../structures/GuildStoreChannel.ts";
 import { GuildClient, GuildHandler } from "../../../../structures/Guild.ts";
+import { DMChannels } from "../../../../structures/Delegates.ts";
 
 export interface RoleEventSubscriber {
   channelCreate: Emitter<{ channel: Channel }>;
@@ -19,10 +19,9 @@ export interface RoleEventSubscriber {
 
 export function handleChannelEvent(
   message: Payload,
-  { subscriber, database, client, handler }: {
+  { subscriber, client, handler }: {
     subscriber: RoleEventSubscriber;
-    database: ChannelDB;
-    client: GuildClient;
+    client: GuildClient & DMChannels;
     handler: GuildHandler;
   },
 ) {
@@ -31,8 +30,8 @@ export function handleChannelEvent(
     case "CHANNEL_CREATE": {
       const channel = channelFrom(message.d, client, handler);
       if (channel instanceof DMChannel) {
-        database.setDMChannel(channel.id, channel);
-        database.setDMChannelUsersRelation(
+        client.setDMChannel(channel.id, channel);
+        client.setDMChannelUsersRelation(
           channel.recipients[0].id,
           channel.id,
         );
@@ -43,7 +42,7 @@ export function handleChannelEvent(
     case "CHANNEL_UPDATE": {
       const channel = channelFrom(message.d, client, handler);
       if (channel instanceof DMChannel) {
-        database.setDMChannel(channel.id, channel);
+        client.setDMChannel(channel.id, channel);
       }
       subscriber.channelUpdate.emit({ channel: channel });
       return;
@@ -51,8 +50,8 @@ export function handleChannelEvent(
     case "CHANNEL_DELETE": {
       const channel = channelFrom(message.d, client, handler);
       if (channel instanceof DMChannel) {
-        database.deleteDMChannel(channel.id);
-        database.deleteDMChannelUsersRelations(channel.recipients[0].id);
+        client.deleteDMChannel(channel.id);
+        client.deleteDMChannelUsersRelations(channel.recipients[0].id);
       }
       subscriber.channelDelete.emit({ channel: channel });
       return;

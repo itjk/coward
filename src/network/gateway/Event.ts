@@ -55,16 +55,3 @@ export function EventSchema(input: unknown): Event {
 
   return input as unknown as Event;
 }
-
-export interface GuildDB {
-  getGuild(guildID: string): Guild | undefined;
-  setGuild(guildID: string, guild: Guild): void;
-  deleteGuild(guildID: string): void;
-}
-
-export interface ChannelDB {
-  setDMChannel(id: string, channel: DMChannel): void;
-  setDMChannelUsersRelation(userId: string, channelId: string): void;
-  deleteDMChannel(id: string): void;
-  deleteDMChannelUsersRelations(userId: string): void;
-}
