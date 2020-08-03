@@ -53,7 +53,11 @@ export class ActualRequester implements Requester {
         token,
         intents,
         client: this.database,
-        handler: { ...this, ...this.messages },
+        handler: {
+          ...this.messages,
+          ...this.channels,
+          ...this.roles,
+        } as GuildHandler,
         subscriber,
       },
     );
