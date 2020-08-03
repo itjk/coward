@@ -1,38 +1,35 @@
 import { Endpoints } from "../util/Constants.ts";
 
-import { Channel } from "../structures/Channel.ts";
-import { Guild } from "../structures/Guild.ts";
+import { Guild, GuildHandler } from "../structures/Guild.ts";
 import { GuildMember } from "../structures/GuildMember.ts";
 import { DMChannel } from "../structures/DMChannel.ts";
-import { Message } from "../structures/Message.ts";
-import { Role } from "../structures/Role.ts";
 import { Invite } from "../structures/Invite.ts";
 import { Database } from "../util/Database.ts";
 import { Requester } from "./Requester.ts";
-import { Messages, Roles, Channels } from "../structures/Handlers.ts";
 import {
-  ModifyRole,
-  CreateChannel,
-  ModifyChannel,
   ModifyPresence,
-  CreateMessage,
-  ModifyMessage,
   ModifyGuild,
   ModifyMember,
   PutBan,
-  CreateRole,
 } from "../structures/Options.ts";
 
 import * as events from "../Events.ts";
 import { RequestHandler } from "../network/rest/RequestHandler.ts";
 import Gateway from "../network/gateway/WebsocketHandler.ts";
 
-// TODO: Split this with implementations of Messages, Roles, Channels, and others.
+import { MessagesRequester } from "./actual_requester/Messages.ts";
+import { ChannelsRequester } from "./actual_requester/Channels.ts";
+import { RolesRequester } from "./actual_requester/Roles.ts";
+
 /** ActualRequester requests with RequestHandler and Gateway. */
-export class ActualRequester implements Requester, Messages, Roles, Channels {
+export class ActualRequester implements Requester {
   private readonly requestHandler: RequestHandler;
   private readonly database = new Database();
   private readonly gateway: Gateway;
+
+  private readonly messages: MessagesRequester;
+  private readonly channels: ChannelsRequester;
+  private readonly roles: RolesRequester;
 
   constructor(
     { token, subscriber, intents }: {
@@ -41,16 +38,25 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
       intents?: number;
     },
   ) {
+    this.requestHandler = new RequestHandler(token);
+
+    this.messages = new MessagesRequester(this.requestHandler, this.database);
+    this.channels = new ChannelsRequester(
+      this.requestHandler,
+      this.database,
+      this.messages,
+    );
+    this.roles = new RolesRequester(this.requestHandler, this.database);
+
     this.gateway = new Gateway(
       {
         token,
         intents,
         client: this.database,
-        handler: this,
+        handler: { ...this, ...this.messages },
         subscriber,
       },
     );
-    this.requestHandler = new RequestHandler(token);
   }
 
   /** Connect to the Discord API */
@@ -69,37 +75,6 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
     return this.gateway.modifyPresence(options);
   }
 
-  /** Post a channel in a guild. Requires the `MANAGE_CHANNELS` permission. */
-  async createChannel(
-    guildID: string,
-    options: CreateChannel,
-  ): Promise<Channel> {
-    const data = await this.requestHandler.request(
-      "POST",
-      Endpoints.GUILD_CHANNELS(guildID),
-      options,
-    );
-    return Channel.from(data, this.database, this);
-  }
-
-  /** Modify a channel. Requires the `MANAGE_CHANNELS` permission in the guild. */
-  async modifyChannel(
-    channelID: string,
-    options: ModifyChannel,
-  ): Promise<Channel> {
-    const data = await this.requestHandler.request(
-      "PATCH",
-      Endpoints.CHANNEL(channelID),
-      options,
-    );
-    return Channel.from(data, this.database, this);
-  }
-
-  /** Delete a channel. Requires the `MANAGE_CHANNELS` permission in the guild. */
-  async deleteChannel(channelID: string): Promise<void> {
-    await this.requestHandler.request("DELETE", Endpoints.CHANNEL(channelID));
-  }
-
   /** Get a DM channel of a user - if there is none, create one. */
   async getDMChannel(userID: string): Promise<DMChannel> {
     const dmChannelID = this.database.getDMChannelUsersRelation(userID);
@@ -112,54 +87,8 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
       Endpoints.USER_CHANNELS("@me"),
       { recipients: [userID], type: 1 },
     );
-    return new DMChannel(data, this);
+    return new DMChannel(data, this.messages);
   }
-
-  /** Post a message in a channel. Requires the `SEND_MESSAGES` permission.*/
-  async createMessage(
-    channelID: string,
-    content: string | CreateMessage,
-  ): Promise<Message> {
-    if (typeof content === "string") content = { content: content };
-    const data = await this.requestHandler.request(
-      "POST",
-      Endpoints.CHANNEL_MESSAGES(channelID),
-      content,
-    );
-    return new Message(data, this.database);
-  }
-
-  /** Modify a message. Must be authored by you. */
-  async modifyMessage(
-    /** Channel the message is in */
-    channelID: string,
-    /** Message to modify */
-    messageID: string,
-    content: string | ModifyMessage,
-  ): Promise<Message> {
-    if (typeof content === "string") content = { content: content };
-    const data = await this.requestHandler.request(
-      "PATCH",
-      Endpoints.CHANNEL_MESSAGE(channelID, messageID),
-      content,
-    );
-    return new Message(data, this.database);
-  }
-
-  /** Delete a message in a channel. Requires the `MANAGE_MESSAGES` permission. */
-  async deleteMessage(
-    /** Channel the message is in */
-    channelID: string,
-    /** The message to delete */
-    messageID: string,
-  ): Promise<void> {
-    await this.requestHandler.request(
-      "DELETE",
-      Endpoints.CHANNEL_MESSAGE(channelID, messageID),
-    );
-  }
-
-  // TODO: bulkDeleteMessage(channelID: string, amount: number): void {}
 
   /** Put a reaction on a message. Requires the `READ_MESSAGE_HISTORY` permission. Additionally, if nobody has reacted to the message with the emoji, requires the `ADD_REACTIONS` permission. */
   async putReaction(
@@ -235,8 +164,6 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
     );
   }
 
-  // TODO: putChannelPermissions ?
-
   async createChannelInvite(
     channelID: string,
     inviteOptions?: { max_age?: number; max_uses?: number },
@@ -246,7 +173,11 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
       Endpoints.CHANNEL_INVITES(channelID),
       inviteOptions,
     );
-    return new Invite(data, this.database, this);
+    return new Invite(
+      data,
+      this.database,
+      { ...this.channels, ...this.messages, ...this.roles } as GuildHandler,
+    );
   }
 
   /** Get invites in a guild channel. Returns an array of Invite objects. Requires `MANAGE_CHANNELS` permission. */
@@ -257,7 +188,11 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
     );
 
     return Object.values(data as object).map((invite: any) =>
-      new Invite(invite, this.database, this)
+      new Invite(
+        invite,
+        this.database,
+        { ...this.channels, ...this.messages, ...this.roles } as GuildHandler,
+      )
     );
   }
 
@@ -310,7 +245,11 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
       Endpoints.GUILD(guildID),
       options,
     );
-    return new Guild(data, this.database, this);
+    return new Guild(
+      data,
+      this.database,
+      { ...this.channels, ...this.messages, ...this.roles } as GuildHandler,
+    );
   }
 
   /** Delete a guild permanently. Must be the owner. */
@@ -405,53 +344,6 @@ export class ActualRequester implements Requester, Messages, Roles, Channels {
     await this.requestHandler.request(
       "DELETE",
       Endpoints.GUILD_BAN(guildID, userID),
-    );
-  }
-
-  /** Create a role in a guild. Requires `MANAGE_ROLES` permission. */
-  async createRole(
-    guildID: string,
-    options: CreateRole,
-  ): Promise<Role> {
-    const data = await this.requestHandler.request(
-      "POST",
-      Endpoints.GUILD_ROLES(guildID),
-      options,
-    );
-    const guild = this.database.getGuild(guildID);
-    if (!guild) throw new Error("unknown guild");
-
-    const role = new Role(data, guild, this);
-    guild.roles.set(role.id, role);
-    return role;
-  }
-
-  // TODO: modify role positions https://discord.com/developers/docs/resources/guild#modify-guild-role-positions
-
-  /** Modify a role in a guild. Requires `MANAGE_ROLES` permission. */
-  async modifyRole(
-    guildID: string,
-    roleID: string,
-    options: ModifyRole,
-  ): Promise<Role> {
-    const data = await this.requestHandler.request(
-      "PATCH",
-      Endpoints.GUILD_ROLE(guildID, roleID),
-      options,
-    );
-    const guild = this.database.getGuild(guildID);
-    if (!guild) throw new Error("unknown guild");
-
-    const role = new Role(data, guild, this);
-    guild.roles.set(role.id, role);
-    return role;
-  }
-
-  /** Delete a role in a guild. Requires `MANAGE_ROLES` permission. */
-  async deleteRole(guildID: string, roleID: string): Promise<void> {
-    await this.requestHandler.request(
-      "DELETE",
-      Endpoints.GUILD_ROLE(guildID, roleID),
     );
   }
 
