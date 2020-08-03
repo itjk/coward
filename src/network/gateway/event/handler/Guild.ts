@@ -28,20 +28,23 @@ export interface GuildEventSubscriber
 }
 
 export function handleGuildEvent(
-  client: GuildClient,
-  handler: GuildHandler,
   message: Payload,
-  subscriber: GuildEventSubscriber,
-  database: GuildDB,
+  delegates: {
+    client: GuildClient;
+    handler: GuildHandler;
+    subscriber: GuildEventSubscriber;
+    database: GuildDB;
+  },
 ) {
   if (message.t.startsWith("GUILD_MEMBER_")) {
-    handleMemberEvent(message, subscriber, database);
+    handleMemberEvent(message, delegates);
     return;
   }
   if (message.t.startsWith("GUILD_ROLE_")) {
-    handleRoleEvent(handler, message, subscriber, database);
+    handleRoleEvent(message, delegates);
     return;
   }
+  const { client, handler, subscriber, database } = delegates;
   const type = message.t;
   switch (type) {
     case "GUILD_CREATE": {

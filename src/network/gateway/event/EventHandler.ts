@@ -16,11 +16,13 @@ export interface EventSubscriber
 }
 
 export function handleEvent(
-  client: GuildClient & MessageClient,
-  handler: GuildHandler,
   message: Payload,
-  subscriber: EventSubscriber,
-  database: GuildDB & ChannelDB,
+  delegates: {
+    client: GuildClient & MessageClient;
+    handler: GuildHandler;
+    subscriber: EventSubscriber;
+    database: GuildDB & ChannelDB;
+  },
 ) {
   const type = message.t;
   if (!type) return;
@@ -28,30 +30,24 @@ export function handleEvent(
   if (type.startsWith("CHANNEL_")) {
     handleChannelEvent(
       message,
-      subscriber,
-      database,
-      client,
-      handler,
+      delegates,
     );
     return;
   }
   if (type.startsWith("GUILD_")) {
     handleGuildEvent(
-      client,
-      handler,
       message,
-      subscriber,
-      database,
+      delegates,
     );
     return;
   }
   if (type.startsWith("MESSAGE_")) {
-    handleMessageEvent(client, message, subscriber);
+    handleMessageEvent(message, delegates);
     return;
   }
   switch (type) {
     case "READY": {
-      subscriber.ready.emit({ type });
+      delegates.subscriber.ready.emit({ type });
       return;
     }
       // TODO: invites

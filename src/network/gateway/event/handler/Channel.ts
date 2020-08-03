@@ -19,10 +19,12 @@ export interface RoleEventSubscriber {
 
 export function handleChannelEvent(
   message: Payload,
-  subsscriber: RoleEventSubscriber,
-  database: ChannelDB,
-  client: GuildClient,
-  handler: GuildHandler,
+  { subscriber, database, client, handler }: {
+    subscriber: RoleEventSubscriber;
+    database: ChannelDB;
+    client: GuildClient;
+    handler: GuildHandler;
+  },
 ) {
   const type = message.t;
   switch (type) {
@@ -35,7 +37,7 @@ export function handleChannelEvent(
           channel.id,
         );
       }
-      subsscriber.channelCreate.emit({ channel: channel });
+      subscriber.channelCreate.emit({ channel: channel });
       return;
     }
     case "CHANNEL_UPDATE": {
@@ -43,7 +45,7 @@ export function handleChannelEvent(
       if (channel instanceof DMChannel) {
         database.setDMChannel(channel.id, channel);
       }
-      subsscriber.channelUpdate.emit({ channel: channel });
+      subscriber.channelUpdate.emit({ channel: channel });
       return;
     }
     case "CHANNEL_DELETE": {
@@ -52,11 +54,11 @@ export function handleChannelEvent(
         database.deleteDMChannel(channel.id);
         database.deleteDMChannelUsersRelations(channel.recipients[0].id);
       }
-      subsscriber.channelDelete.emit({ channel: channel });
+      subscriber.channelDelete.emit({ channel: channel });
       return;
     }
     case "CHANNEL_PINS_UPDATE": {
-      subsscriber.channelPinsUpdate.emit(
+      subscriber.channelPinsUpdate.emit(
         { channel: channelFrom(message.d, client, handler) },
       );
       return;

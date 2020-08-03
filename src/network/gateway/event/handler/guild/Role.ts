@@ -12,10 +12,12 @@ export interface RoleEventSubscriber {
 }
 
 export function handleRoleEvent(
-  client: Roles,
   message: Payload,
-  subscriber: RoleEventSubscriber,
-  database: GuildDB,
+  { handler, subscriber, database }: {
+    handler: Roles;
+    subscriber: RoleEventSubscriber;
+    database: GuildDB;
+  },
 ) {
   switch (message.t) {
     case "GUILD_ROLE_CREATE": {
@@ -23,7 +25,7 @@ export function handleRoleEvent(
       const guild = database.getGuild(data.guild_id);
 
       if (guild == null) return;
-      const role = new Role(data.role, guild, client);
+      const role = new Role(data.role, guild, handler);
 
       guild.roles.set(role.id, role);
       database.setGuild(guild.id, guild);
@@ -36,13 +38,13 @@ export function handleRoleEvent(
       const guild = database.getGuild(data.guild_id);
 
       if (guild == null) return;
-      const role = new Role(data.role, guild, client);
+      const role = new Role(data.role, guild, handler);
 
       guild.roles.set(role.id, role);
       database.setGuild(guild.id, guild);
 
       subscriber.guildRoleUpdate.emit(
-        { guild: guild, role: new Role(data.role, guild, client) },
+        { guild: guild, role: new Role(data.role, guild, handler) },
       );
       return;
     }

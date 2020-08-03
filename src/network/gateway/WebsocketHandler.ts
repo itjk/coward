@@ -128,11 +128,8 @@ export default class Gateway {
 
     if (!message.t) return;
     handleEvent(
-      this.options.client,
-      this.options.handler,
       message,
-      this.options.subscriber,
-      this.options.database,
+      this.options,
     );
   }
 

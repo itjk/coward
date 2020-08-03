@@ -14,9 +14,11 @@ export interface MessageEventSubscriber {
 }
 
 export function handleMessageEvent(
-  client: MessageClient,
   message: Payload,
-  subscriber: MessageEventSubscriber,
+  { client, subscriber }: {
+    client: MessageClient;
+    subscriber: MessageEventSubscriber;
+  },
 ) {
   const type = message.t;
   switch (type) {
