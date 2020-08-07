@@ -79,6 +79,9 @@ export class ActualRequester implements Requester {
     return this.gateway.modifyPresence(options);
   }
 
+  // TODO: Below methods should split into `Permission`s
+  // by identifying bot's permissions.
+
   /** Get a DM channel of a user - if there is none, create one. */
   async getDMChannel(userID: string): Promise<DMChannel> {
     const dmChannelID = this.database.getDMChannelUsersRelation(userID);
