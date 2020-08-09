@@ -39,8 +39,7 @@ export type UserFlagResolvable =
 
 export class UserFlag extends BitField {
   constructor(userFlags: UserFlagResolvable) {
-    super(userFlags);
-    this.flags = UserFlags;
+    super(userFlags, UserFlags);
   }
 
   has(flag: UserFlagResolvable) {

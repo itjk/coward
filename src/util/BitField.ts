@@ -6,12 +6,13 @@ export type BitFieldResolvable =
 
 /** Base class for places where the discord API uses bitfields  */
 export class BitField {
-  flags: Map<string, number>;
   bitfield: number;
 
-  constructor(bitfield: BitFieldResolvable) {
+  constructor(
+    bitfield: BitFieldResolvable,
+    public readonly flags = new Map<string, number>(),
+  ) {
     this.bitfield = this.resolve(bitfield);
-    this.flags = new Map<string, number>();
   }
 
   has(bit: BitFieldResolvable): boolean {

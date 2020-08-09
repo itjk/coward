@@ -75,8 +75,7 @@ export type PermissionResolvable =
 
 export class Permission extends BitField {
   constructor(permission: PermissionResolvable) {
-    super(permission);
-    this.flags = Permissions;
+    super(permission, Permissions);
   }
   /**
 	 * ```ts

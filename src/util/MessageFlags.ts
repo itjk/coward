@@ -23,8 +23,7 @@ export type MessageFlagResolvable =
 
 export class MessageFlag extends BitField {
   constructor(messageFlags: MessageFlagResolvable) {
-    super(messageFlags);
-    this.flags = MessageFlags;
+    super(messageFlags, MessageFlags);
   }
 
   has(flag: MessageFlagResolvable) {
