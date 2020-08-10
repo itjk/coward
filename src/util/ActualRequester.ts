@@ -5,8 +5,8 @@ import { GuildMember } from "../structures/GuildMember.ts";
 import { DMChannel } from "../structures/DMChannel.ts";
 import { Invite } from "../structures/Invite.ts";
 import { Database } from "../util/Database.ts";
-import { Requester } from "./Requester.ts";
-import {
+import type { Requester } from "./Requester.ts";
+import type {
   ModifyPresence,
   ModifyGuild,
   ModifyMember,

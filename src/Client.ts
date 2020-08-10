@@ -1,5 +1,5 @@
 import * as events from "./Events.ts";
-import { Requester } from "./util/Requester.ts";
+import type { Requester } from "./util/Requester.ts";
 import { ActualRequester } from "./util/ActualRequester.ts";
 
 /**

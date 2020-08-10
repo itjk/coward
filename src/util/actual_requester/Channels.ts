@@ -1,14 +1,14 @@
 import { Endpoints } from "../../util/Constants.ts";
 
 import { Channel } from "../../structures/Channel.ts";
-import { Channels } from "../../structures/Handlers.ts";
-import {
+import type { Channels } from "../../structures/Handlers.ts";
+import type {
   CreateChannel,
   ModifyChannel,
 } from "../../structures/Options.ts";
-import { RequestHandler } from "../../network/rest/RequestHandler.ts";
-import { Database } from "../Database.ts";
-import { MessagesRequester } from "./Messages.ts";
+import type { RequestHandler } from "../../network/rest/RequestHandler.ts";
+import type { Database } from "../Database.ts";
+import type { MessagesRequester } from "./Messages.ts";
 
 export class ChannelsRequester implements Channels {
   constructor(

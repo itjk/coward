@@ -1,5 +1,5 @@
-import { Guild } from "./Guild.ts";
-import { DMChannel } from "./DMChannel.ts";
+import type { Guild } from "./Guild.ts";
+import type { DMChannel } from "./DMChannel.ts";
 
 export interface Guilds {
   getGuild(id: string): Guild | undefined;

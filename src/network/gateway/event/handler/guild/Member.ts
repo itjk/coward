@@ -1,9 +1,9 @@
-import { Payload } from "../../../Payload.ts";
-import { Guild } from "../../../../../structures/Guild.ts";
-import { User } from "../../../../../structures/User.ts";
+import type { Payload } from "../../../Payload.ts";
+import type { Guild } from "../../../../../structures/Guild.ts";
+import type { User } from "../../../../../structures/User.ts";
 import { GuildMember } from "../../../../../structures/GuildMember.ts";
-import { Emitter } from "../../../../../util/Emitter.ts";
-import { Guilds } from "../../../../../structures/Delegates.ts";
+import type { Emitter } from "../../../../../util/Emitter.ts";
+import type { Guilds } from "../../../../../structures/Delegates.ts";
 
 export interface MemberEventSubscriber {
   guildMemberAdd: Emitter<{ guild: Guild; member: GuildMember }>;

@@ -1,7 +1,7 @@
-import { ModifyRole } from "./Options.ts";
-import { Guild } from "./Guild.ts";
+import type { ModifyRole } from "./Options.ts";
+import type { Guild } from "./Guild.ts";
 import { Permission } from "../util/Permission.ts";
-import { Roles } from "./Handlers.ts";
+import type { Roles } from "./Handlers.ts";
 
 /** Class representing a Role */
 export class Role {

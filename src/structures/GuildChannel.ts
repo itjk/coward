@@ -1,12 +1,12 @@
-import { ModifyChannel } from "./Options.ts";
+import type { ModifyChannel } from "./Options.ts";
 import { Channel } from "./Channel.ts";
-import { Guild } from "./Guild.ts";
+import type { Guild } from "./Guild.ts";
 import { PermissionOverwrite } from "./PermissionOverwrite.ts";
-import {
+import type {
   GuildChannelAssociation,
   Guilds,
 } from "./Delegates.ts";
-import { Messages, Channels } from "./Handlers.ts";
+import type { Messages, Channels } from "./Handlers.ts";
 
 export type GuildChannelClient =
   & Guilds

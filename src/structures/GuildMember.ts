@@ -1,6 +1,6 @@
 import { User } from "./User.ts";
-import { Guild } from "./Guild.ts";
-import { Role } from "./Role.ts";
+import type { Guild } from "./Guild.ts";
+import type { Role } from "./Role.ts";
 import { Permission } from "../util/Permission.ts";
 
 /** Class representing a guild member */

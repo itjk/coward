@@ -1,4 +1,4 @@
-import { Event } from "./Event.ts";
+import type { Event } from "./Event.ts";
 
 export enum OpCode {
   DISPATCH,

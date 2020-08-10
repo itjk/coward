@@ -1,4 +1,4 @@
-import { EmbedMessage } from "./EmbedMessage.ts";
+import type { EmbedMessage } from "./EmbedMessage.ts";
 
 export interface ModifyPresence {
   status?: "online" | "dnd" | "idle" | "invisible" | "offline";

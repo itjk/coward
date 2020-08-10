@@ -1,10 +1,10 @@
 import { Endpoints } from "../../util/Constants.ts";
 
 import { Message } from "../../structures/Message.ts";
-import { Messages } from "../../structures/Handlers.ts";
-import { CreateMessage, ModifyMessage } from "../../structures/Options.ts";
-import { RequestHandler } from "../../network/rest/RequestHandler.ts";
-import { Database } from "../Database.ts";
+import type { Messages } from "../../structures/Handlers.ts";
+import type { CreateMessage, ModifyMessage } from "../../structures/Options.ts";
+import type { RequestHandler } from "../../network/rest/RequestHandler.ts";
+import type { Database } from "../Database.ts";
 
 export class MessagesRequester implements Messages {
   constructor(

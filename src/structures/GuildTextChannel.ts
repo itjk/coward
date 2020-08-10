@@ -1,4 +1,4 @@
-import { Message } from "./Message.ts";
+import type { Message } from "./Message.ts";
 import {
   GuildChannel,
   GuildChannelClient,

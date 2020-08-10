@@ -1,12 +1,12 @@
-import {
+import type {
   ModifyChannel,
   CreateMessage,
   ModifyMessage,
   ModifyRole,
 } from "./Options.ts";
-import { Channel } from "./Channel.ts";
-import { Message } from "./Message.ts";
-import { Role } from "./Role.ts";
+import type { Channel } from "./Channel.ts";
+import type { Message } from "./Message.ts";
+import type { Role } from "./Role.ts";
 
 export interface Channels {
   modifyChannel(id: string, options: ModifyChannel): Promise<Channel>;

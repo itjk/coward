@@ -1,5 +1,5 @@
-import { Channel } from "./Channel.ts";
-import { CreateMessage, ModifyMessage } from "./Options.ts";
+import type { Channel } from "./Channel.ts";
+import type { CreateMessage, ModifyMessage } from "./Options.ts";
 
 /**
  * Mix-in representing any text-based channel

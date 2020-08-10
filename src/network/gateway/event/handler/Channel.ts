@@ -1,9 +1,12 @@
 import { Channel } from "../../../../structures/Channel.ts";
-import { Emitter } from "../../../../util/Emitter.ts";
-import { Payload } from "../../Payload.ts";
+import type { Emitter } from "../../../../util/Emitter.ts";
+import type { Payload } from "../../Payload.ts";
 import { DMChannel } from "../../../../structures/DMChannel.ts";
-import { GuildClient, GuildHandler } from "../../../../structures/Guild.ts";
-import { DMChannels } from "../../../../structures/Delegates.ts";
+import type {
+  GuildClient,
+  GuildHandler,
+} from "../../../../structures/Guild.ts";
+import type { DMChannels } from "../../../../structures/Delegates.ts";
 
 export interface RoleEventSubscriber {
   channelCreate: Emitter<{ channel: Channel }>;

@@ -1,7 +1,7 @@
 import { Role } from "./Role.ts";
 import { User } from "./User.ts";
-import { Guild } from "./Guild.ts";
-import { Roles } from "./Handlers.ts";
+import type { Guild } from "./Guild.ts";
+import type { Roles } from "./Handlers.ts";
 
 /** Class representing an emoji in a guild */
 export class GuildEmoji {

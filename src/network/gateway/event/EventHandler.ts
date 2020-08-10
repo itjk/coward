@@ -1,13 +1,13 @@
-import { Payload } from "../Payload.ts";
-import { Emitter } from "../../../util/Emitter.ts";
+import type { Payload } from "../Payload.ts";
+import type { Emitter } from "../../../util/Emitter.ts";
 import { handleChannelEvent, RoleEventSubscriber } from "./handler/Channel.ts";
 import { handleGuildEvent, GuildEventSubscriber } from "./handler/Guild.ts";
 import {
   handleMessageEvent,
   MessageEventSubscriber,
 } from "./handler/Message.ts";
-import { GuildClient, GuildHandler } from "../../../structures/Guild.ts";
-import { MessageClient } from "../../../structures/Message.ts";
+import type { GuildClient, GuildHandler } from "../../../structures/Guild.ts";
+import type { MessageClient } from "../../../structures/Message.ts";
 
 export interface EventSubscriber
   extends RoleEventSubscriber, GuildEventSubscriber, MessageEventSubscriber {

@@ -1,14 +1,14 @@
 import { Emitter } from "./util/Emitter.ts";
 
-import { Channel } from "./structures/Channel.ts";
-import { Guild } from "./structures/Guild.ts";
-import { GuildMember } from "./structures/GuildMember.ts";
-import { GuildEmoji } from "./structures/GuildEmoji.ts";
-import { ReactionCustomEmoji } from "./structures/ReactionCustomEmoji.ts";
-import { ReactionStandardEmoji } from "./structures/ReactionStandardEmoji.ts";
-import { Message } from "./structures/Message.ts";
-import { User } from "./structures/User.ts";
-import { Role } from "./structures/Role.ts";
+import type { Channel } from "./structures/Channel.ts";
+import type { Guild } from "./structures/Guild.ts";
+import type { GuildMember } from "./structures/GuildMember.ts";
+import type { GuildEmoji } from "./structures/GuildEmoji.ts";
+import type { ReactionCustomEmoji } from "./structures/ReactionCustomEmoji.ts";
+import type { ReactionStandardEmoji } from "./structures/ReactionStandardEmoji.ts";
+import type { Message } from "./structures/Message.ts";
+import type { User } from "./structures/User.ts";
+import type { Role } from "./structures/Role.ts";
 
 /** Fired when the client is ready. */
 export const ready = new Emitter();

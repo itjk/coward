@@ -1,6 +1,3 @@
-import { Guild } from "../../structures/Guild.ts";
-import { DMChannel } from "../../structures/DMChannel.ts";
-
 const eventNames = [
   "HELLO",
   "READY",

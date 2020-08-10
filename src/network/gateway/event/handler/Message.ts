@@ -1,6 +1,6 @@
-import { Payload } from "../../Payload.ts";
+import type { Payload } from "../../Payload.ts";
 import { Message, MessageClient } from "../../../../structures/Message.ts";
-import { Emitter } from "../../../../util/Emitter.ts";
+import type { Emitter } from "../../../../util/Emitter.ts";
 
 export interface MessageEventSubscriber {
   messageCreate: Emitter<{ message: Message }>;

@@ -1,5 +1,8 @@
-import { GuildChannelClient, GuildChannelHandler } from "./GuildChannel.ts";
-import { Messages } from "./Handlers.ts";
+import type {
+  GuildChannelClient,
+  GuildChannelHandler,
+} from "./GuildChannel.ts";
+import type { Messages } from "./Handlers.ts";
 import {
   GuildTextChannel,
   DMChannel,

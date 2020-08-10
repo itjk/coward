@@ -1,17 +1,17 @@
 import { GuildChannel, GuildChannelClient } from "./GuildChannel.ts";
-import { GuildTextChannel } from "./GuildTextChannel.ts";
-import { GuildVoiceChannel } from "./GuildVoiceChannel.ts";
-import { GuildChannelCategory } from "./GuildChannelCategory.ts";
-import { GuildNewsChannel } from "./GuildNewsChannel.ts";
-import { GuildStoreChannel } from "./GuildStoreChannel.ts";
+import type { GuildTextChannel } from "./GuildTextChannel.ts";
+import type { GuildVoiceChannel } from "./GuildVoiceChannel.ts";
+import type { GuildChannelCategory } from "./GuildChannelCategory.ts";
+import type { GuildNewsChannel } from "./GuildNewsChannel.ts";
+import type { GuildStoreChannel } from "./GuildStoreChannel.ts";
 import { GuildMember } from "./GuildMember.ts";
 import { GuildEmoji } from "./GuildEmoji.ts";
 import { Role } from "./Role.ts";
-import {
+import type {
   GuildChannelAssociation,
   Guilds,
 } from "./Delegates.ts";
-import { Roles, Messages, Channels } from "./Handlers.ts";
+import type { Roles, Messages, Channels } from "./Handlers.ts";
 
 type GuildChannelTypes =
   | GuildTextChannel

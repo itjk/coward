@@ -1,14 +1,14 @@
 import { Endpoints } from "../../util/Constants.ts";
 
 import { Role } from "../../structures/Role.ts";
-import { Roles } from "../../structures/Handlers.ts";
-import {
+import type { Roles } from "../../structures/Handlers.ts";
+import type {
   ModifyRole,
   CreateRole,
 } from "../../structures/Options.ts";
 
-import { RequestHandler } from "../../network/rest/RequestHandler.ts";
-import { Database } from "../Database.ts";
+import type { RequestHandler } from "../../network/rest/RequestHandler.ts";
+import type { Database } from "../Database.ts";
 
 export class RolesRequester implements Roles {
   constructor(
