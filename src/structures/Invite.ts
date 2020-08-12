@@ -12,6 +12,6 @@ export class Invite {
     this.code = data.code;
     if (data.guild) this.guild = new Guild(data.guild, client, handler);
     if (data.inviter) this.inviter = new User(data.inviter);
-    this.channel = new Channel(data.channel, handler);
+    this.channel = Channel.from(data.channel, client, handler);
   }
 }

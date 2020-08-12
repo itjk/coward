@@ -31,7 +31,7 @@ export class GuildChannel extends Channel {
     private readonly client: GuildChannelClient,
     private readonly handler: GuildChannelHandler,
   ) {
-    super(data, handler);
+    super(data);
 
     this.name = data.name;
     this.position = data.position;

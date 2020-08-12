@@ -18,8 +18,7 @@ export class Channel {
   public readonly id: string;
   public readonly type: number;
 
-  constructor(data: any, protected readonly __messages: Messages) {
-    // TODO: Move `__messages` to TextChannelMixIn (but I don't know how to do).
+  constructor(data: any) {
     this.id = data.id;
     this.type = data.type;
   }
@@ -43,7 +42,7 @@ export class Channel {
       case 6:
         return new GuildStoreChannel(data, client, handler);
       default:
-        return new Channel(data, handler);
+        return new Channel(data);
     }
   }
 }

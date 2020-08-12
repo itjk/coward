@@ -24,6 +24,7 @@ export interface Messages {
     options: string | ModifyMessage,
   ): Promise<Message>;
   deleteMessage(channelId: string, messageId: string): Promise<void>;
+  postTypingIndicator(channelId: string): Promise<void>;
 }
 
 export interface Roles {
