@@ -13,6 +13,7 @@ import { GuildEmoji } from "../../../../structures/GuildEmoji.ts";
 export interface GuildEventSubscriber
   extends RoleEventSubscriber, MemberEventSubscriber {
   guildCreate: Emitter<{ guild: Guild }>;
+  guildUpdate: Emitter<{ guild: Guild }>;
   guildDelete: Emitter<{ guild: Guild }>;
   guildBanAdd: Emitter<{ guild: Guild; user: User }>;
   guildBanRemove: Emitter<
@@ -49,6 +50,12 @@ export function handleGuildEvent(
       const guild = new Guild(message.d, client, handler);
       client.setGuild(guild.id, guild);
       subscriber.guildCreate.emit({ guild: guild });
+      return;
+    }
+    case "GUILD_UPDATE": {
+      const guild = new Guild(message.d, client, handler);
+      client.setGuild(guild.id, guild);
+      subscriber.guildUpdate.emit({ guild });
       return;
     }
     case "GUILD_DELETE": {

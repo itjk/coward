@@ -43,6 +43,9 @@ export const guildCreate: Emitter<{ guild: Guild }> = new Emitter<
   { guild: Guild }
 >();
 
+/** Fired when a guild is updated. */
+export const guildUpdate = new Emitter<{ guild: Guild }>();
+
 /**
  * Fired when
  *	- The client leaves or is removed from a guild.
