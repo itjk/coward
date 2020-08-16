@@ -1,26 +1,21 @@
 import type * as events from "../Events.ts";
 
 export type EventsKey = keyof typeof events;
-export type EventValue<K extends EventsKey> = typeof events[K];
-export type EventsEntry = [EventValue<EventsKey>, EventsListener<EventsKey>];
+export type EventsValue<K extends EventsKey> = typeof events[K];
 
-export type EventsEmitterEvent<K extends EventsKey> = EventValue<K> extends
+export type EventsPayload<K extends EventsKey> = EventsValue<K> extends
   Emitter<infer E> ? E : {};
 
 export type Events = {
-  [K in EventsKey]: EventValue<K>;
+  [K in EventsKey]: EventsValue<K>;
 };
-
-export type EventsListener<K extends EventsKey> = Listener<
-  EventsEmitterEvent<K>
->;
 
 export type EventsListeners = {
-  [K in EventsKey]?: EventsListener<K>;
+  [K in EventsKey]?: Listener<EventsPayload<K>>;
 };
 
-export interface Listener<T> {
-  (event: T): any;
+export interface Listener<T extends object> {
+  (event: T): void;
 }
 
 export class Emitter<T extends object = {}> {

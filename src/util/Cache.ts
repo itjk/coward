@@ -5,7 +5,9 @@ import type {
   Events,
   EventsKey,
   EventsListeners,
-  EventsEntry,
+  EventsValue,
+  EventsPayload,
+  Listener,
 } from "./Emitter.ts";
 
 export class Cache implements GuildCache, MessageCache {
@@ -76,6 +78,10 @@ export class Cache implements GuildCache, MessageCache {
   };
 
   constructor(publishers: Events) {
+    type EventsEntry = [
+      EventsValue<EventsKey>,
+      Listener<EventsPayload<EventsKey>>,
+    ];
     for (
       const [publisher, subscriber] of (Object.keys(publishers) as EventsKey[])
         .map((key) => [publishers[key], this.subscribers[key]])
