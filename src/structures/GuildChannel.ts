@@ -8,7 +8,7 @@ import type {
 } from "./Delegates.ts";
 import type { Messages, Channels } from "./Handlers.ts";
 
-export type GuildChannelClient =
+export type GuildChannelCache =
   & Guilds
   & GuildChannelAssociation;
 
@@ -28,7 +28,7 @@ export class GuildChannel extends Channel {
 
   constructor(
     data: any,
-    private readonly client: GuildChannelClient,
+    private readonly cache: GuildChannelCache,
     private readonly handler: GuildChannelHandler,
   ) {
     super(data);
@@ -37,7 +37,7 @@ export class GuildChannel extends Channel {
     this.position = data.position;
     this.nsfw = data.nsfw;
     this.parentID = data.parent_id || null;
-    this._guildID = client.getGuildId(this.id);
+    this._guildID = cache.getGuildId(this.id);
 
     this.permission_overwrites = new Map<string, PermissionOverwrite>();
     for (const permission_overwrite of data.permission_overwrites) {
@@ -47,7 +47,7 @@ export class GuildChannel extends Channel {
   }
 
   get guild(): Guild | undefined {
-    return this.client.getGuild(this._guildID ?? "");
+    return this.cache.getGuild(this._guildID ?? "");
   }
 
   delete() {

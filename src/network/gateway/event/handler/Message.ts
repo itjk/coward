@@ -1,5 +1,5 @@
 import type { Payload } from "../../Payload.ts";
-import { Message, MessageClient } from "../../../../structures/Message.ts";
+import { Message, MessageCache } from "../../../../structures/Message.ts";
 import type { Emitter } from "../../../../util/Emitter.ts";
 
 export interface MessageEventSubscriber {
@@ -16,7 +16,7 @@ export interface MessageEventSubscriber {
 export function handleMessageEvent(
   message: Payload,
   { cache, subscriber }: Readonly<{
-    cache: MessageClient;
+    cache: MessageCache;
     subscriber: MessageEventSubscriber;
   }>,
 ) {

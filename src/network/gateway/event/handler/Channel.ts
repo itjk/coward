@@ -2,7 +2,7 @@ import { Channel } from "../../../../structures/Channel.ts";
 import type { Emitter } from "../../../../util/Emitter.ts";
 import type { Payload } from "../../Payload.ts";
 import type {
-  GuildClient,
+  GuildCache,
   GuildHandler,
 } from "../../../../structures/Guild.ts";
 
@@ -17,7 +17,7 @@ export function handleChannelEvent(
   message: Payload,
   { subscriber, cache, handler }: Readonly<{
     subscriber: RoleEventSubscriber;
-    cache: GuildClient;
+    cache: GuildCache;
     handler: GuildHandler;
   }>,
 ) {

@@ -11,8 +11,8 @@ import { handleEvent, EventSubscriber } from "./event/EventHandler.ts";
 import { Discord, Versions } from "../../util/Constants.ts";
 import { OpCode, Payload } from "./Payload.ts";
 import { newCloseEvent, CloseEventCode } from "./event/Close.ts";
-import type { GuildClient, GuildHandler } from "../../structures/Guild.ts";
-import type { MessageClient } from "../../structures/Message.ts";
+import type { GuildCache, GuildHandler } from "../../structures/Guild.ts";
+import type { MessageCache } from "../../structures/Message.ts";
 
 export default class Gateway {
   private sock!: WebSocket;
@@ -32,7 +32,7 @@ export default class Gateway {
     private readonly options: {
       readonly token: string;
       readonly intents?: number;
-      readonly cache: GuildClient & MessageClient;
+      readonly cache: GuildCache & MessageCache;
       readonly handler: GuildHandler;
       readonly subscriber: EventSubscriber;
     },

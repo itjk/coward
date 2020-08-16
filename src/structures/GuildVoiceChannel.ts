@@ -1,6 +1,6 @@
 import {
   GuildChannel,
-  GuildChannelClient,
+  GuildChannelCache,
   GuildChannelHandler,
 } from "./GuildChannel.ts";
 
@@ -14,10 +14,10 @@ export class GuildVoiceChannel extends GuildChannel {
 
   constructor(
     data: any,
-    client: GuildChannelClient,
+    cache: GuildChannelCache,
     handler: GuildChannelHandler,
   ) {
-    super(data, client, handler);
+    super(data, cache, handler);
 
     this.bitrate = data.bitrate;
     this.userLimit = data.user_limit;

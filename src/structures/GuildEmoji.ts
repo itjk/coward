@@ -17,12 +17,12 @@ export class GuildEmoji {
   /** Whether the emoji is available - may be false due to loss of server boosts. */
   public readonly available: boolean;
 
-  constructor(data: any, public readonly guild: Guild, client: Roles) {
+  constructor(data: any, public readonly guild: Guild, cache: Roles) {
     this.id = data.id;
     this.name = data.name;
     if (data.roles) {
       for (const r of data.roles) {
-        this.roles.set(r.id, new Role(r, guild, client));
+        this.roles.set(r.id, new Role(r, guild, cache));
       }
     }
     if (this.user) this.user = new User(data.user) || null;

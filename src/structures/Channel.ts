@@ -1,8 +1,7 @@
 import type {
-  GuildChannelClient,
+  GuildChannelCache,
   GuildChannelHandler,
 } from "./GuildChannel.ts";
-import type { Messages } from "./Handlers.ts";
 import {
   GuildTextChannel,
   DMChannel,
@@ -25,22 +24,22 @@ export class Channel {
 
   static from(
     data: any,
-    client: GuildChannelClient,
+    cache: GuildChannelCache,
     handler: GuildChannelHandler,
   ) {
     switch (data.type) {
       case 0:
-        return new GuildTextChannel(data, client, handler);
+        return new GuildTextChannel(data, cache, handler);
       case 1:
         return new DMChannel(data, handler);
       case 2:
-        return new GuildVoiceChannel(data, client, handler);
+        return new GuildVoiceChannel(data, cache, handler);
       case 4:
-        return new GuildChannelCategory(data, client, handler);
+        return new GuildChannelCategory(data, cache, handler);
       case 5:
-        return new GuildNewsChannel(data, client, handler);
+        return new GuildNewsChannel(data, cache, handler);
       case 6:
-        return new GuildStoreChannel(data, client, handler);
+        return new GuildStoreChannel(data, cache, handler);
       default:
         return new Channel(data);
     }

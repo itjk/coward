@@ -1,6 +1,6 @@
 import {
   GuildChannel,
-  GuildChannelClient,
+  GuildChannelCache,
   GuildChannelHandler,
 } from "./GuildChannel.ts";
 
@@ -11,9 +11,9 @@ import {
 export class GuildChannelCategory extends GuildChannel {
   constructor(
     data: any,
-    client: GuildChannelClient,
+    cache: GuildChannelCache,
     handler: GuildChannelHandler,
   ) {
-    super(data, client, handler);
+    super(data, cache, handler);
   }
 }

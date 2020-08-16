@@ -6,8 +6,8 @@ import {
   handleMessageEvent,
   MessageEventSubscriber,
 } from "./handler/Message.ts";
-import type { GuildClient, GuildHandler } from "../../../structures/Guild.ts";
-import type { MessageClient } from "../../../structures/Message.ts";
+import type { GuildCache, GuildHandler } from "../../../structures/Guild.ts";
+import type { MessageCache } from "../../../structures/Message.ts";
 
 export interface EventSubscriber
   extends RoleEventSubscriber, GuildEventSubscriber, MessageEventSubscriber {
@@ -17,7 +17,7 @@ export interface EventSubscriber
 export function handleEvent(
   message: Payload,
   delegates: Readonly<{
-    cache: GuildClient & MessageClient;
+    cache: GuildCache & MessageCache;
     handler: GuildHandler;
     subscriber: EventSubscriber;
   }>,

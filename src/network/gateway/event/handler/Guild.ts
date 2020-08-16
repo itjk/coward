@@ -3,7 +3,7 @@ import { MemberEventSubscriber, handleMemberEvent } from "./guild/Member.ts";
 import type { Payload } from "../../Payload.ts";
 import {
   Guild,
-  GuildClient,
+  GuildCache,
   GuildHandler,
 } from "../../../../structures/Guild.ts";
 import type { User } from "../../../../structures/User.ts";
@@ -30,7 +30,7 @@ export interface GuildEventSubscriber
 export function handleGuildEvent(
   message: Payload,
   delegates: Readonly<{
-    cache: GuildClient;
+    cache: GuildCache;
     handler: GuildHandler;
     subscriber: GuildEventSubscriber;
   }>,

@@ -1,7 +1,7 @@
 import type { Message } from "./Message.ts";
 import {
   GuildChannel,
-  GuildChannelClient,
+  GuildChannelCache,
   GuildChannelHandler,
 } from "./GuildChannel.ts";
 import { TextChannelMixIn, TextChannel } from "./TextChannel.ts";
@@ -23,10 +23,10 @@ class GuildTextChannel_ extends GuildChannel implements TextChannel {
 
   constructor(
     data: any,
-    client: GuildChannelClient,
+    cache: GuildChannelCache,
     handler: GuildChannelHandler,
   ) {
-    super(data, client, handler);
+    super(data, cache, handler);
 
     this._messages = handler;
 
