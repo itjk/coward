@@ -7,10 +7,6 @@ import type { GuildStoreChannel } from "./GuildStoreChannel.ts";
 import { GuildMember } from "./GuildMember.ts";
 import { GuildEmoji } from "./GuildEmoji.ts";
 import { Role } from "./Role.ts";
-import type {
-  GuildChannelAssociation,
-  Guilds,
-} from "./Delegates.ts";
 import type { Roles, Messages, Channels } from "./Handlers.ts";
 
 type GuildChannelTypes =
@@ -20,10 +16,7 @@ type GuildChannelTypes =
   | GuildNewsChannel
   | GuildStoreChannel;
 
-export type GuildClient =
-  & Guilds
-  & GuildChannelAssociation
-  & GuildChannelClient;
+export type GuildClient = GuildChannelClient;
 
 export type GuildHandler =
   & Roles
@@ -63,7 +56,6 @@ export class Guild {
 
     if (data.channels) {
       for (const chan of data.channels) {
-        client.setGuildId(chan.id, this.id);
         this.channels.set(chan.id, GuildChannel.from(chan, client, handler));
       }
     }

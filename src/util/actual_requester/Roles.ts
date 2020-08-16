@@ -8,12 +8,12 @@ import type {
 } from "../../structures/Options.ts";
 
 import type { RequestHandler } from "../../network/rest/RequestHandler.ts";
-import type { Database } from "../Database.ts";
+import type { Cache } from "../Cache.ts";
 
 export class RolesRequester implements Roles {
   constructor(
     private readonly requestHandler: RequestHandler,
-    private readonly database: Database,
+    private readonly database: Cache,
   ) {}
 
   /** Create a role in a guild. Requires `MANAGE_ROLES` permission. */

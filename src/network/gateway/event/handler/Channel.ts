@@ -1,12 +1,10 @@
 import { Channel } from "../../../../structures/Channel.ts";
 import type { Emitter } from "../../../../util/Emitter.ts";
 import type { Payload } from "../../Payload.ts";
-import { DMChannel } from "../../../../structures/DMChannel.ts";
 import type {
   GuildClient,
   GuildHandler,
 } from "../../../../structures/Guild.ts";
-import type { DMChannels } from "../../../../structures/Delegates.ts";
 
 export interface RoleEventSubscriber {
   channelCreate: Emitter<{ channel: Channel }>;
@@ -17,48 +15,33 @@ export interface RoleEventSubscriber {
 
 export function handleChannelEvent(
   message: Payload,
-  { subscriber, client, handler }: Readonly<{
+  { subscriber, cache, handler }: Readonly<{
     subscriber: RoleEventSubscriber;
-    client: GuildClient & DMChannels;
+    cache: GuildClient;
     handler: GuildHandler;
   }>,
 ) {
   const type = message.t;
   switch (type) {
-    case "CHANNEL_CREATE": {
-      const channel = Channel.from(message.d, client, handler);
-      if (channel instanceof DMChannel) {
-        client.setDMChannel(channel.id, channel);
-        client.setDMChannelUsersRelation(
-          channel.recipients[0].id,
-          channel.id,
-        );
-      }
-      subscriber.channelCreate.emit({ channel: channel });
-      return;
-    }
-    case "CHANNEL_UPDATE": {
-      const channel = Channel.from(message.d, client, handler);
-      if (channel instanceof DMChannel) {
-        client.setDMChannel(channel.id, channel);
-      }
-      subscriber.channelUpdate.emit({ channel: channel });
-      return;
-    }
-    case "CHANNEL_DELETE": {
-      const channel = Channel.from(message.d, client, handler);
-      if (channel instanceof DMChannel) {
-        client.deleteDMChannel(channel.id);
-        client.deleteDMChannelUsersRelations(channel.recipients[0].id);
-      }
-      subscriber.channelDelete.emit({ channel: channel });
-      return;
-    }
-    case "CHANNEL_PINS_UPDATE": {
-      subscriber.channelPinsUpdate.emit(
-        { channel: Channel.from(message.d, client, handler) },
+    case "CHANNEL_CREATE":
+      subscriber.channelCreate.emit(
+        { channel: Channel.from(message.d, cache, handler) },
       );
       return;
-    }
+    case "CHANNEL_UPDATE":
+      subscriber.channelUpdate.emit(
+        { channel: Channel.from(message.d, cache, handler) },
+      );
+      return;
+    case "CHANNEL_DELETE":
+      subscriber.channelDelete.emit(
+        { channel: Channel.from(message.d, cache, handler) },
+      );
+      return;
+    case "CHANNEL_PINS_UPDATE":
+      subscriber.channelPinsUpdate.emit(
+        { channel: Channel.from(message.d, cache, handler) },
+      );
+      return;
   }
 }

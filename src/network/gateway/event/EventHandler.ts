@@ -11,13 +11,13 @@ import type { MessageClient } from "../../../structures/Message.ts";
 
 export interface EventSubscriber
   extends RoleEventSubscriber, GuildEventSubscriber, MessageEventSubscriber {
-  ready: Emitter<unknown>;
+  ready: Emitter<{}>;
 }
 
 export function handleEvent(
   message: Payload,
   delegates: Readonly<{
-    client: GuildClient & MessageClient;
+    cache: GuildClient & MessageClient;
     handler: GuildHandler;
     subscriber: EventSubscriber;
   }>,

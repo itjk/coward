@@ -13,53 +13,43 @@ export interface RoleEventSubscriber {
 
 export function handleRoleEvent(
   message: Payload,
-  { handler, subscriber, client }: Readonly<{
+  { handler, subscriber, cache }: Readonly<{
     handler: Roles;
     subscriber: RoleEventSubscriber;
-    client: Guilds;
+    cache: Guilds;
   }>,
 ) {
   switch (message.t) {
     case "GUILD_ROLE_CREATE": {
       const data = message.d as { guild_id: string; role: unknown };
-      const guild = client.getGuild(data.guild_id);
+      const guild = cache.getGuild(data.guild_id);
 
       if (guild == null) return;
       const role = new Role(data.role, guild, handler);
 
-      guild.roles.set(role.id, role);
-      client.setGuild(guild.id, guild);
-
-      subscriber.guildRoleCreate.emit({ guild: guild, role: role });
+      subscriber.guildRoleCreate.emit({ guild, role });
       return;
     }
     case "GUILD_ROLE_UPDATE": {
       const data = message.d as { guild_id: string; role: unknown };
-      const guild = client.getGuild(data.guild_id);
+      const guild = cache.getGuild(data.guild_id);
 
       if (guild == null) return;
       const role = new Role(data.role, guild, handler);
 
-      guild.roles.set(role.id, role);
-      client.setGuild(guild.id, guild);
-
-      subscriber.guildRoleUpdate.emit(
-        { guild: guild, role: new Role(data.role, guild, handler) },
-      );
+      subscriber.guildRoleUpdate.emit({ guild, role });
       return;
     }
     case "GUILD_ROLE_DELETE": {
       const data = message.d as { guild_id: string; role_id: string };
-      const guild = client.getGuild(data.guild_id);
+      const guild = cache.getGuild(data.guild_id);
 
       if (guild == null) return;
       const role = guild.roles.get(data.role_id);
 
       if (role == null) return;
-      guild.roles.delete(role.id);
-      client.setGuild(guild.id, guild);
 
-      subscriber.guildRoleDelete.emit({ guild: guild, role: role });
+      subscriber.guildRoleDelete.emit({ guild, role });
       return;
     }
   }

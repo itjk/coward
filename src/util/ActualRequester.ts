@@ -4,7 +4,7 @@ import { Guild, GuildHandler } from "../structures/Guild.ts";
 import { GuildMember } from "../structures/GuildMember.ts";
 import { DMChannel } from "../structures/DMChannel.ts";
 import { Invite } from "../structures/Invite.ts";
-import { Database } from "../util/Database.ts";
+import { Cache } from "../util/Cache.ts";
 import type { Requester } from "./Requester.ts";
 import type {
   ModifyPresence,
@@ -13,7 +13,7 @@ import type {
   PutBan,
 } from "../structures/Options.ts";
 
-import * as events from "../Events.ts";
+import type { Events } from "./Emitter.ts";
 import { RequestHandler } from "../network/rest/RequestHandler.ts";
 import Gateway from "../network/gateway/WebsocketHandler.ts";
 
@@ -24,7 +24,7 @@ import { RolesRequester } from "./actual_requester/Roles.ts";
 /** ActualRequester requests with RequestHandler and Gateway. */
 export class ActualRequester implements Requester {
   private readonly requestHandler: RequestHandler;
-  private readonly database = new Database();
+  private readonly cache: Cache;
   private readonly gateway: Gateway;
 
   private readonly messages: MessagesRequester;
@@ -34,30 +34,31 @@ export class ActualRequester implements Requester {
   constructor(
     { token, subscriber, intents }: {
       token: string;
-      subscriber: typeof events;
+      subscriber: Events;
       intents?: number;
     },
   ) {
     this.requestHandler = new RequestHandler(token);
+    this.cache = new Cache(subscriber);
 
-    this.messages = new MessagesRequester(this.requestHandler, this.database);
+    this.messages = new MessagesRequester(this.requestHandler, this.cache);
     this.channels = new ChannelsRequester(
       this.requestHandler,
-      this.database,
+      this.cache,
       this.messages,
     );
-    this.roles = new RolesRequester(this.requestHandler, this.database);
+    this.roles = new RolesRequester(this.requestHandler, this.cache);
 
     this.gateway = new Gateway(
       {
         token,
         intents,
-        client: this.database,
         handler: {
           ...this.messages,
           ...this.channels,
           ...this.roles,
         } as GuildHandler,
+        cache: this.cache,
         subscriber,
       },
     );
@@ -84,9 +85,9 @@ export class ActualRequester implements Requester {
 
   /** Get a DM channel of a user - if there is none, create one. */
   async getDMChannel(userID: string): Promise<DMChannel> {
-    const dmChannelID = this.database.getDMChannelUsersRelation(userID);
+    const dmChannelID = this.cache.getDMChannelUsersRelation(userID);
     if (dmChannelID != null) {
-      const dmChannel = this.database.getDMChannel(dmChannelID);
+      const dmChannel = this.cache.getDMChannel(dmChannelID);
       if (dmChannel != null) return dmChannel;
     }
     const data = await this.requestHandler.request(
@@ -182,7 +183,7 @@ export class ActualRequester implements Requester {
     );
     return new Invite(
       data,
-      this.database,
+      this.cache,
       { ...this.channels, ...this.messages, ...this.roles } as GuildHandler,
     );
   }
@@ -197,7 +198,7 @@ export class ActualRequester implements Requester {
     return Object.values(data as object).map((invite: any) =>
       new Invite(
         invite,
-        this.database,
+        this.cache,
         { ...this.channels, ...this.messages, ...this.roles } as GuildHandler,
       )
     );
@@ -243,7 +244,7 @@ export class ActualRequester implements Requester {
     );
     return new Guild(
       data,
-      this.database,
+      this.cache,
       { ...this.channels, ...this.messages, ...this.roles } as GuildHandler,
     );
   }
@@ -264,7 +265,7 @@ export class ActualRequester implements Requester {
       Endpoints.GUILD_MEMBER(guildID, userID),
       options,
     );
-    const guild = this.database.getGuild(guildID);
+    const guild = this.cache.getGuild(guildID);
     if (!guild) throw new Error("unknown guild");
 
     const member = new GuildMember(data, guild);

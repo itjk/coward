@@ -30,7 +30,7 @@ export interface GuildEventSubscriber
 export function handleGuildEvent(
   message: Payload,
   delegates: Readonly<{
-    client: GuildClient;
+    cache: GuildClient;
     handler: GuildHandler;
     subscriber: GuildEventSubscriber;
   }>,
@@ -43,12 +43,11 @@ export function handleGuildEvent(
     handleRoleEvent(message, delegates);
     return;
   }
-  const { client, handler, subscriber } = delegates;
+  const { cache, handler, subscriber } = delegates;
   const type = message.t;
   switch (type) {
     case "GUILD_CREATE": {
-      const guild = new Guild(message.d, client, handler);
-      client.setGuild(guild.id, guild);
+      const guild = new Guild(message.d, cache, handler);
       subscriber.guildCreate.emit({ guild: guild });
       return;
     }
@@ -59,14 +58,13 @@ export function handleGuildEvent(
       return;
     }
     case "GUILD_DELETE": {
-      const guild = new Guild(message.d, client, handler);
-      client.deleteGuild(guild.id);
+      const guild = new Guild(message.d, cache, handler);
       subscriber.guildDelete.emit({ guild: guild });
       return;
     }
     case "GUILD_BAN_ADD": {
       const data = message.d as { guild_id: string; user: User };
-      const guild = client.getGuild(data.guild_id);
+      const guild = cache.getGuild(data.guild_id);
       if (guild == null) return;
       subscriber.guildBanAdd.emit(
         { guild: guild, user: data.user },
@@ -75,7 +73,7 @@ export function handleGuildEvent(
     }
     case "GUILD_BAN_REMOVE": {
       const data = message.d as { guild_id: string; user: User };
-      const guild = client.getGuild(data.guild_id);
+      const guild = cache.getGuild(data.guild_id);
       if (guild == null) return;
       subscriber.guildBanRemove.emit(
         { guild: guild, user: data.user },
@@ -84,7 +82,7 @@ export function handleGuildEvent(
     }
     case "GUILD_EMOJIS_UPDATE": {
       const data = message.d as { guild_id: string; emojis: unknown[] };
-      const guild = client.getGuild(data.guild_id);
+      const guild = cache.getGuild(data.guild_id);
       if (guild == null) return;
 
       const emojis = new Array<GuildEmoji>(
@@ -95,7 +93,7 @@ export function handleGuildEvent(
     }
     case "GUILD_INTEGRATIONS_UPDATE": {
       const data = message.d as { guild_id: string };
-      const guild = client.getGuild(data.guild_id);
+      const guild = cache.getGuild(data.guild_id);
       if (guild == null) return;
       subscriber.guildIntegrationsUpdate.emit({ guild: guild });
       return;

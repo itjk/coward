@@ -7,13 +7,13 @@ import type {
   ModifyChannel,
 } from "../../structures/Options.ts";
 import type { RequestHandler } from "../../network/rest/RequestHandler.ts";
-import type { Database } from "../Database.ts";
+import type { Cache } from "../Cache.ts";
 import type { MessagesRequester } from "./Messages.ts";
 
 export class ChannelsRequester implements Channels {
   constructor(
     private readonly requestHandler: RequestHandler,
-    private readonly database: Database,
+    private readonly database: Cache,
     private readonly client: MessagesRequester,
   ) {}
 

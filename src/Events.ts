@@ -11,7 +11,7 @@ import type { User } from "./structures/User.ts";
 import type { Role } from "./structures/Role.ts";
 
 /** Fired when the client is ready. */
-export const ready = new Emitter();
+export const ready = new Emitter<{}>();
 
 /** Fired when a channel is created. */
 export const channelCreate: Emitter<{ channel: Channel }> = new Emitter<

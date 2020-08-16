@@ -15,26 +15,24 @@ export interface MessageEventSubscriber {
 
 export function handleMessageEvent(
   message: Payload,
-  { client, subscriber }: Readonly<{
-    client: MessageClient;
+  { cache, subscriber }: Readonly<{
+    cache: MessageClient;
     subscriber: MessageEventSubscriber;
   }>,
 ) {
   const type = message.t;
   switch (type) {
-    case "MESSAGE_CREATE": {
+    case "MESSAGE_CREATE":
       subscriber.messageCreate.emit(
-        { message: new Message(message.d, client) },
+        { message: new Message(message.d, cache) },
       );
       return;
-    }
-    case "MESSAGE_UPDATE": {
+    case "MESSAGE_UPDATE":
       if (!message.d || !(message.d as { author: unknown }).author) return;
       subscriber.messageUpdate.emit(
-        { message: new Message(message.d, client) },
+        { message: new Message(message.d, cache) },
       );
       return;
-    }
     case "MESSAGE_DELETE": {
       const data = message.d as { id: string; channel_id: string };
       subscriber.messageDelete.emit(

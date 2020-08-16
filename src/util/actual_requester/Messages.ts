@@ -4,12 +4,12 @@ import { Message } from "../../structures/Message.ts";
 import type { Messages } from "../../structures/Handlers.ts";
 import type { CreateMessage, ModifyMessage } from "../../structures/Options.ts";
 import type { RequestHandler } from "../../network/rest/RequestHandler.ts";
-import type { Database } from "../Database.ts";
+import type { Cache } from "../Cache.ts";
 
 export class MessagesRequester implements Messages {
   constructor(
     private readonly requestHandler: RequestHandler,
-    private readonly database: Database,
+    private readonly database: Cache,
   ) {}
 
   /**

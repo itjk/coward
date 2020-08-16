@@ -32,7 +32,7 @@ export default class Gateway {
     private readonly options: {
       readonly token: string;
       readonly intents?: number;
-      readonly client: GuildClient & MessageClient;
+      readonly cache: GuildClient & MessageClient;
       readonly handler: GuildHandler;
       readonly subscriber: EventSubscriber;
     },
