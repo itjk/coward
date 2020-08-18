@@ -1,13 +1,8 @@
-import { Client, Intents } from "https://deno.land/x/coward@dev/mod.ts";
+import { Client } from "https://deno.land/x/coward@dev/mod.ts";
 
 const client = new Client(
   "TOKEN",
-  {
-    intents: [
-      Intents.GUILDS,
-      Intents.GUILD_MESSAGES,
-    ],
-  },
+  { intents: ["GUILDS", "GUILD_MESSAGES"] },
 );
 
 const events = client.events;
