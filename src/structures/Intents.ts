@@ -110,8 +110,8 @@ export type IntentsResolvable =
   | IntentsResolvable[];
 
 export class Intents extends BitField {
-  constructor(messageFlags: IntentsResolvable) {
-    super(messageFlags, new Map(Object.entries(intents)));
+  constructor(resolvables: IntentsResolvable) {
+    super(resolvables, new Map(Object.entries(intents)));
   }
 }
 
