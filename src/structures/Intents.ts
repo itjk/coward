@@ -115,21 +115,29 @@ export class Intents extends BitField {
   }
 }
 
-function eventsByIntent(
+type EventKeyByIntentsKey<K extends IntentsKey> =
+  typeof EventKeysByIntents[K][number];
+
+type EventsByIntents<K extends IntentsKey> = Pick<
+  Events,
+  EventKeyByIntentsKey<K>
+>;
+
+function eventsByIntent<K extends IntentsKey>(
   events: Events,
-  key: IntentsKey,
-): Partial<Events> {
+  key: K,
+): EventsByIntents<K> {
   const eventKeys = EventKeysByIntents[key];
   return eventKeys.reduce((acc, key) => ({
     ...acc,
     [key]: events[key],
-  }), {});
+  }), {} as EventsByIntents<K>);
 }
 
 /** Extract events from `events` by `keys` of Intents */
-export function eventsByIntents(
+export function eventsByIntents<K extends IntentsKey>(
   events: Events,
-  ...keys: IntentsKey[]
-): Partial<Events>[] {
+  ...keys: K[]
+): EventsByIntents<K>[] {
   return keys.map((key) => eventsByIntent(events, key));
 }
