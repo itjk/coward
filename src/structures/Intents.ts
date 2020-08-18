@@ -1,6 +1,6 @@
 import type { EventsKey, Events } from "../Events.ts";
 import { BitField } from "../util/BitField.ts";
-import { acceptWebSocket } from "https://deno.land/std@0.61.0/ws/mod.ts";
+
 /** 
  * A bit field expressing conditionally subscription on Discord API.
  * https://discord.com/developers/docs/topics/gateway#gateway-intents
