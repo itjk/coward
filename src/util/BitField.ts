@@ -41,6 +41,6 @@ export class BitField {
   }
 
   toArray() {
-    return [...this.flags.keys()].filter(this.has);
+    return [...this.flags.keys()].filter(this.has.bind(this));
   }
 }
