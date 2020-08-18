@@ -2,7 +2,7 @@
 Thank you for contributing to Coward! 🥳
 There are many ways to contribute, whether it be improving the documentation, submitting bug reports, feature requests, or writing code that can be incorporated into Coward.
 
-Don't use the issue tracker for support questions. Use the #coward-help channel on the [Discord Server](https://discord.gg/9u9Hkn7)
+Don't use the issue tracker for support questions. Use the #coward channel on the [Discord Server](https://discord.gg/9u9Hkn7)
 
 ## Reporting a Bug
 Submit a [bug report](https://github.com/fox-cat/coward/issues/new/choose). Make it clear what the issue is.
