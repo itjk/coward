@@ -22,26 +22,20 @@ Deno.test("get events by intents", async () => {
     intents: ["GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS"],
   });
 
-  const intentNames = {
-    GUILD_MESSAGES: [
-      "messageCreate",
-      "messageUpdate",
-      "messageDelete",
-      "messageDeleteBulk",
-    ],
-    GUILD_MESSAGE_REACTIONS: [
-      "messageReactionAdd",
-      "messageReactionRemove",
-      "messageReactionRemoveAll",
-    ],
-  } as const;
-  for (const [name, intent] of Object.entries(bot.eventsByIntents)) {
-    assertEquals(
-      Object.keys(intent),
-      intentNames[name as keyof typeof intentNames],
-    );
-    for (const emitter of Object.values(intent)) {
-      assert(emitter instanceof Emitter);
-    }
+  const intentNames = [
+    "messageCreate",
+    "messageUpdate",
+    "messageDelete",
+    "messageDeleteBulk",
+    "messageReactionAdd",
+    "messageReactionRemove",
+    "messageReactionRemoveAll",
+  ] as const;
+  assertEquals(
+    Object.keys(bot.eventsByIntents),
+    intentNames,
+  );
+  for (const emitter of Object.values(bot.eventsByIntents)) {
+    assert(emitter instanceof Emitter);
   }
 });

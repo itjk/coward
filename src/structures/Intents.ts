@@ -141,6 +141,6 @@ export function eventsByIntents<K extends IntentsKey>(
 ): EventsByIntents<K> {
   return keys.reduce((acc, key) => ({
     ...acc,
-    [key]: eventsByIntent(events, key),
+    ...eventsByIntent(events, key),
   }), {} as EventsByIntents<K>);
 }
